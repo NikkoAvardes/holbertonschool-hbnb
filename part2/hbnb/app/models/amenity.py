@@ -1,10 +1,13 @@
-# TODO: Import required modules (uuid, datetime, etc.)
-# TODO: Define Amenity class with the following attributes:
-#       - id (string, unique identifier, auto-generated)
-#       - name (string, required, max 50 characters)
-#       - created_at (datetime, auto-generated)
-#       - updated_at (datetime, auto-updated)
-# TODO: Implement __init__ method with validation
-# TODO: Implement update method to modify amenity data
-# TODO: Implement to_dict method for serialization
-# TODO: Add business rule: amenity name must be unique
+# app/models/amenity.py
+from .base_model import BaseModel
+
+class Amenity(BaseModel):
+    """
+    Représente une commodité (Wi-Fi, Parking, etc.)
+    """
+
+    def __init__(self, name):
+        super().__init__()
+        if name == "" or len(name) > 50:
+            print("Nom invalide")
+            self.name = name
