@@ -1,19 +1,52 @@
-# TODO: Import ABC (Abstract Base Class) and abstractmethod
-# TODO: Define Repository interface with abstract methods:
-#       - add(obj): Add an object to storage
-#       - get(obj_id): Retrieve object by ID
-#       - get_all(): Retrieve all objects
-#       - update(obj_id, data): Update object with new data
-#       - delete(obj_id): Remove object from storage
-#       - get_by_attribute(attr_name, attr_value): Find object by attribute
-#
-# TODO: Define InMemoryRepository class implementing Repository interface
-# TODO: Implement __init__ method to initialize _storage dictionary
-# TODO: Implement add method to store objects by ID
-# TODO: Implement get method to retrieve objects by ID
-# TODO: Implement get_all method to return all stored objects
-# TODO: Implement update method to modify existing objects
-# TODO: Implement delete method to remove objects
-# TODO: Implement get_by_attribute method for custom queries
-# TODO: Add error handling for non-existent objects
-# TODO: Add logging for repository operations
+from abc import ABC, abstractmethod
+
+class Repository(ABC):
+    @abstractmethod
+    def add(self, obj):
+        pass
+
+    @abstractmethod
+    def get(self, obj_id):
+        pass
+
+    @abstractmethod
+    def get_all(self):
+        pass
+
+    @abstractmethod
+    def update(self, obj_id, data):
+        pass
+
+    @abstractmethod
+    def delete(self, obj_id):
+        pass
+
+    @abstractmethod
+    def get_by_attribute(self, attr_name, attr_value):
+        pass
+
+
+class InMemoryRepository(Repository):
+    def __init__(self):
+        self._storage = {}
+
+    def add(self, obj):
+        self._storage[obj.id] = obj
+
+    def get(self, obj_id):
+        return self._storage.get(obj_id)
+
+    def get_all(self):
+        return list(self._storage.values())
+
+    def update(self, obj_id, data):
+        obj = self.get(obj_id)
+        if obj:
+            obj.update(data)
+
+    def delete(self, obj_id):
+        if obj_id in self._storage:
+            del self._storage[obj_id]
+
+    def get_by_attribute(self, attr_name, attr_value):
+        return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)

@@ -1,4 +1,3 @@
-# TODO: Initialize services module
-# TODO: Import the HBnBFacade class
-# TODO: Create facade singleton instance
-# TODO: Set up service layer configuration
+from app.services.facade import HBnBFacade
+
+facade = HBnBFacade()

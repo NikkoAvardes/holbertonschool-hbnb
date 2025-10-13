@@ -1,10 +1,2 @@
-# TODO: Add Flask framework
-# TODO: Add Flask-RESTX for API documentation and validation
-# TODO: Add Flask-JWT-Extended for authentication (future implementation)
-# TODO: Add Flask-CORS for cross-origin requests (if needed)
-# TODO: Add pytest for testing
-# TODO: Add pytest-flask for Flask testing utilities
-# TODO: Add python-dotenv for environment variable management
-# TODO: Add marshmallow for serialization/validation (if needed)
-# TODO: Add SQLAlchemy for future database integration
-# TODO: Specify version numbers for all dependencies
+flask
+flask-restx
