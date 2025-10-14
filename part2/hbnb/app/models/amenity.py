@@ -1,6 +1,7 @@
 # app/models/amenity.py
 from .base_model import BaseModel
 
+
 class Amenity(BaseModel):
     """
     Représente une commodité (Wi-Fi, Parking, etc.)

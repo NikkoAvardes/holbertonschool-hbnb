@@ -24,5 +24,5 @@ class BaseModel:
         for key, value in data.items():
             if hasattr(self, key):
                 # équivalent à self.first_name = "Nina"
-                setattr(self, key, value)  
+                setattr(self, key, value) 
         self.save()
