@@ -1,6 +1,7 @@
 # app/models/user.py
 from .base_model import BaseModel
 
+
 class User(BaseModel):
     """
     Représente un utilisateur de l'application HBnB.
@@ -8,7 +9,8 @@ class User(BaseModel):
 
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
-        # TODO: valider que first_name et last_name ne dépassent pas 50 caractères
+        # TODO: valider que first_name et last_name 
+        # ne dépassent pas 50 caractères
         if len(first_name) > 50 or len(last_name) > 50:
             print("Le prénom ou le nom ne doit pas dépasser 50 caractères.")
         # TODO: valider le format de l'email

@@ -2,6 +2,7 @@
 import uuid
 from datetime import datetime
 
+
 class BaseModel:
     """
     Classe de base commune à toutes les entités :
@@ -22,5 +23,6 @@ class BaseModel:
         """Met à jour les attributs d’après un dictionnaire de valeurs"""
         for key, value in data.items():
             if hasattr(self, key):
-                setattr(self, key, value)  # équivalent à self.first_name = "Nina"
+                # équivalent à self.first_name = "Nina"
+                setattr(self, key, value)  
         self.save()
