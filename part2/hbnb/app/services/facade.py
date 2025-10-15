@@ -7,6 +7,8 @@ from models.user import User
 from models.place import Place
 from app.models.amenity import Amenity
 
+from app.models.user import User
+
 
 class HBnBFacade:
     """Facade for business logic operations in the HBnB application."""

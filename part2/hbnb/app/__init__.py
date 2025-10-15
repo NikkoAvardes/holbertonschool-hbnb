@@ -4,6 +4,7 @@ from flask_restx import Api
 from app.api.v1.users import api as users_ns
 
 from app.api.v1.amenities import api as amenities_ns
+from app.api.v1.users import api as users_ns
 
 
 def create_app():
