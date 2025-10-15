@@ -53,7 +53,7 @@ class PlaceList(Resource):
             'description': new_place.description,
             'price': new_place.price,
             'latitude': new_place.latitude,
-            'longitude': new_place.longtitude,
+            'longitude': new_place.longitude,
             'owner_id': new_place.owner_id,
             'owner': new_place.owner.id,
             'amenities': [a.id for a in new_place.amenities],
@@ -103,6 +103,13 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        data = api.payload
-        update_place = facade.update_place(place_id, data)
-        return update_place
+        place_data = api.payload
+        update_place = facade.update_place(place_id, place_data)
+        if not update_place:
+            return {"error": "Place not found"}, 404
+        return {
+            'id': update_place.id,
+            'owner_id': update_place.owner.id,
+            'amenities': [a.id for a in update_place.amenities],
+            'reviews': [r.id for r in update_place.reviews]
+        }, 200
