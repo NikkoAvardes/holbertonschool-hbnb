@@ -52,9 +52,8 @@ class HBnBFacade:
         return self.place_repo.get_all()
 
     def update_place(self, place_id, place_data):
-        # Placeholder for logic to update a place
-        pass
-
+        self.user_repo.update(place_id, place_data)
+        return self.get_place(place_id)
 
 
 
