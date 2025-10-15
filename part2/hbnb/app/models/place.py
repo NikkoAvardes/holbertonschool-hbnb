@@ -1,9 +1,12 @@
 #!/usr/bin/python3
+# Importe la classe de base commune
 from app.models.base_model import BaseModel
 
 
+# Classe Place : représente un logement ou une location
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
+        # Initialise le lieu avec ses attributs principaux
         super().__init__()
         self.title = title
         self.description = description
@@ -11,13 +14,15 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        # Liste des avis associés au lieu
+        self.reviews = []
+        # Liste des commodités associées au lieu
+        self.amenities = []
 
     def add_review(self, review):
-        """Add a review to the place."""
+        # Ajoute un avis au lieu
         self.reviews.append(review)
 
     def add_amenity(self, amenity):
-        """Add an amenity to the place."""
+        # Ajoute une commodité au lieu
         self.amenities.append(amenity)

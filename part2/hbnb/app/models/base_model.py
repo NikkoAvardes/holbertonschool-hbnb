@@ -1,8 +1,11 @@
 #!/usr/bin/python3
+# Importe uuid pour générer des identifiants uniques
 import uuid
+# Importe datetime pour gérer les dates
 from datetime import datetime
 
 
+# Classe de base pour tous les modèles du projet
 class BaseModel:
     """
     Classe de base commune à toutes les entités :
@@ -11,18 +14,19 @@ class BaseModel:
     """
 
     def __init__(self):
+        # Initialise l'ID unique et les timestamps
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
 
     def save(self):
-        """Met à jour le timestamp updated_at"""
+        # Met à jour le timestamp updated_at
         self.updated_at = datetime.now()
 
     def update(self, data):
-        """Met à jour les attributs d’après un dictionnaire de valeurs"""
+        # Met à jour les attributs à partir d'un dictionnaire
         for key, value in data.items():
             if hasattr(self, key):
-                # équivalent à self.first_name = "Nina"
-                setattr(self, key, value) 
+                # Affecte la valeur à l'attribut correspondant
+                setattr(self, key, value)
         self.save()

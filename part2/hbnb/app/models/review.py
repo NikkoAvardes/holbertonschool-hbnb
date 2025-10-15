@@ -1,26 +1,31 @@
-# app/models/review.py
-from .base_model import BaseModel
+
+# Fichier modèle Review : représente un avis utilisateur
+from .place import Place
+from .user import User
+from .base_model import BaseModel  # Importe la classe de base
 
 
+# Classe Review : avis laissé par un utilisateur sur un lieu
 class Review(BaseModel):
     """
     Représente un avis laissé par un utilisateur sur un lieu.
     """
 
     def __init__(self, text, rating, place, user):
+        # Initialise l'avis avec ses attributs
         super().__init__()
-        # TODO: valider que text n’est pas vide
+        # Vérifie que le texte n'est pas vide
         if not text:
             raise ValueError("text vide")
-        # TODO: valider que rating est un entier entre 1 et 5
-        if not isinstance(rating, int) or not (1 >= rating <= 5):
+        # Vérifie que le rating est un entier entre 1 et 5
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
             raise ValueError("Le rating doit être un entier entre 1 et 5")
-        # TODO: vérifier que place et user existent et sont des
-        # instances valides
-        if not isinstance(place, place) or not isinstance(user, user):
+        # Vérifie que place et user sont des instances valides
+        # (remplacer 'place' et 'user' par les classes réelles)
+        if not isinstance(place, Place) or not isinstance(user, User):
             raise ValueError("Les objets 'place' et 'user' doivent être "
                              "des instances valides")
-        # TODO: initialiser les attributs
+        # Initialise les attributs
         self.text = text
         self.rating = rating
         self.place = place
