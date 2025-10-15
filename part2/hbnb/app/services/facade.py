@@ -121,8 +121,8 @@ class HBnBFacade:
         # Placeholder for logic to create an amenity
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
-        return amenity
-
+        return amenity.to_dict(), 201
+    
     def get_amenity(self, amenity_id):
         # Logic to retrieve an amenity by ID
         return self.amenity_repo.get(amenity_id)

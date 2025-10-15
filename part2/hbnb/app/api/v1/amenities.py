@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+Endpoints REST pour la gestion des amenities (CRUD).
+"""
 # Importation des modules nécessaires
 
 # Flask-RESTx pour l'API REST
@@ -37,8 +40,8 @@ class AmenityList(Resource):
         new_amenity = facade.create_amenity(data)
         if new_amenity is None:
             return {"error": "Failed to create amenity"}, 500
-        return new_amenity.to_dict, 201
-    
+        return new_amenity
+
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """Récupère la liste de toutes les amenities"""
