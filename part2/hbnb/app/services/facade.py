@@ -1,13 +1,10 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
-
-from models import storage
-from models.review import Review
-from models.user import User
-from models.place import Place
 from app.models.amenity import Amenity
+from app.models.review import Review
+from app.models.place import Place
 
-from app.models.user import User
+
 
 
 class HBnBFacade:
@@ -53,8 +50,8 @@ class HBnBFacade:
         rating = review_data.get("rating")
         text = review_data.get("text")
 
-        user = storage.get(User, user_id)
-        place = storage.get(Place, place_id)
+        user = self.user_repo.get(user_id)
+        place = self.place_repo.get(place_id)
         if not user or not place:
             return {"error": "Invalid user_id or place_id"}, 400
 
@@ -64,66 +61,52 @@ class HBnBFacade:
         new_review = Review(text=text, rating=rating,
                             user_id=user_id, place_id=place_id)
 
-        storage.new(new_review)
-        storage.save()
+        self.review_repo.add(new_review)
 
-        return new_review.to_dict(), 201
+        return new_review
 
 
     def get_review(self, review_id):
-        review = storage.get(Review, review_id)
+        review = self.review_repo.get(review_id)
         if not review:
-            return {"error": "Review not found"}, 404
-        return review.to_dict(), 200
+            return None
+        return review
 
 
     def get_all_reviews(self):
-        reviews = storage.all(Review).values()
-        return [r.to_dict() for r in reviews], 200
+        return self.review_repo.get_all()
 
 
     def get_reviews_by_place(self, place_id):
-        place = storage.get(Place, place_id)
+        place = self.place_repo.get(place_id)
         if not place:
-            return {"error": "Place not found"}, 404
+            return None
 
-        reviews = [r.to_dict() for r in storage.all(Review).values()
-                   if r.place_id == place_id]
-        return reviews, 200
+        reviews = [r for r in self.review_repo.get_all() if r.place_id == place_id]
+        return reviews
 
 
     def update_review(self, review_id, review_data):
-        review = storage.get(Review, review_id)
+        review = self.review_repo.get(review_id)
         if not review:
-            return {"error": "Review not found"}, 404
+            return None
 
-        if "text" in review_data:
-            review.text = review_data["text"]
-
-        if "rating" in review_data:
-            rating = review_data["rating"]
-            if not isinstance(rating, int) or rating < 1 or rating > 5:
-                return {"error": "Rating must be between 1 and 5"}, 400
-            review.rating = rating
-
-        storage.save()
-        return {"message": "Review updated successfully"}, 200
+        self.review_repo.update(review_id, review_data)
+        return self.get_review(review_id)
 
 
     def delete_review(self, review_id):
-        review = storage.get(Review, review_id)
+        review = self.review_repo.get(review_id)
         if not review:
-            return {"error": "Review not found"}, 404
-
-        storage.delete(review)
-        storage.save()
-        return {"message": "Review deleted successfully"}, 200
+            return False
+        
+        self.review_repo.delete(review_id)
+        return True
 
     def create_amenity(self, amenity_data):
-        # Placeholder for logic to create an amenity
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
-        return amenity.to_dict(), 201
+        return amenity
     
     def get_amenity(self, amenity_id):
         # Logic to retrieve an amenity by ID
