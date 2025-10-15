@@ -35,6 +35,7 @@ place_model = api.model('Place', {
     'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
 
+
 @api.route('/')
 class PlaceList(Resource):
     @api.expect(place_model)
@@ -42,14 +43,40 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
-        pass
+        place_data = api.payload
+        existing_place = facade.get_place(place_data)
+        if existing_place:
+            return {'error': 'Place already exist'}, 400
+        new_place = facade.create_place(place_data)
+        return {
+            'title': new_place.title,
+            'description': new_place.description,
+            'price': new_place.price
+            'latitude': new_place.latitude,
+            'longitude': new_place.longtitude
+            'owner_id': new_place.owner_id
+            'owner': new_place.owner,
+            'amenities': new_place.amenities
+            'reviews': new_place.reviews
+            }, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        # Placeholder for logic to return a list of all places
-        pass
+        place = facade.get_all_places()
+        return [
+            {
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price
+                'latitude': new_place.latitude,
+                'longitude': new_place.longtitude
+                'owner_id': new_place.owner_id
+                'owner': new_place.owner,
+                'amenities': new_place.amenities
+                'reviews': new_place.reviews
+            } for place in places
+        ], 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
