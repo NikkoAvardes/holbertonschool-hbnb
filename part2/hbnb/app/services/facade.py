@@ -41,8 +41,23 @@ class HBnBFacade:
 
     def get_place(self, place_id):
         """Retrieve a place by its ID (to be implemented)."""
-        # Logic will be implemented in later tasks
+        return self.place_repo.get(place_id)
+
+    def create_place(self, place_data):
+        place = Place(**place_data)
+        self.place_repo.add(place)
+        return place
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        # Placeholder for logic to update a place
         pass
+
+
+
+
 
     def create_review(self, review_data):
         user_id = review_data.get("user_id")
