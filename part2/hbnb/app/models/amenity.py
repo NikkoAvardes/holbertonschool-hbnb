@@ -11,7 +11,7 @@ class Amenity(BaseModel):
 
     def __init__(self, name):
         # Initialise la commodité avec un nom
-        super().__init__(name)
+        super().__init__()
         # Vérifie la validité du nom
         if name == "" or len(name) > 50:
             print("Nom invalide")
