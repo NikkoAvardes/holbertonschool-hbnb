@@ -40,11 +40,25 @@ class HBnBFacade:
         return self.get_user(user_id)
 
     def get_place(self, place_id):
-        """Retrieve a place by its ID (to be implemented)."""
+        """Retrieve a place by its ID."""
         return self.place_repo.get(place_id)
 
+    def get_place_by_title(self, title):
+        """Retrieve a place by its title."""
+        return self.place_repo.get_by_attribute('title', title)
+
     def create_place(self, place_data):
-        place = Place(**place_data)
+        owner_id = place_data.get('owner_id')
+        owner = self.user_repo.get(owner_id)
+        if not owner:
+            return None, f"Owner with id {owner_id} not found"
+        
+        # Create place_data copy without owner_id and add owner object
+        place_args = place_data.copy()
+        place_args.pop('owner_id', None)  # Remove owner_id
+        place_args['owner'] = owner  # Add owner object
+        
+        place = Place(**place_args)
         self.place_repo.add(place)
         return place
 

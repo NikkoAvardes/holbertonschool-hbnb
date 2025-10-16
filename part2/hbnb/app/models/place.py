@@ -14,6 +14,7 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+        self.owner_id = owner.id  # Store owner ID for easy access
         # Liste des avis associés au lieu
         self.reviews = []
         # Liste des commodités associées au lieu
