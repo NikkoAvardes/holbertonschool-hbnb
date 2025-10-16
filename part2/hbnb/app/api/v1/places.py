@@ -71,17 +71,13 @@ class PlaceList(Resource):
         places = facade.get_all_places()
         return [
             {
+                'id': place.id,
                 'title': place.title,
-                'description': place.description,
-                'price': place.price,
                 'latitude': place.latitude,
-                'longitude': place.longitude,
-                'owner_id': place.owner_id,
-                'owner': place.owner.id,
-                'amenities': [a.id for a in place.amenities],
-                'reviews': [r.id for r in place.reviews]
+                'longitude': place.longitude
             } for place in places
         ], 200
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
