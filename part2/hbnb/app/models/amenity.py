@@ -16,3 +16,10 @@ class Amenity(BaseModel):
         if name == "" or len(name) > 50:
             print("Nom invalide")
         self.name = name
+
+    def to_dict(self):
+        """Retourne un dictionnaire représentant l'objet Amenity."""
+        return {
+            "id": self.id,
+            "name": self.name
+        }
