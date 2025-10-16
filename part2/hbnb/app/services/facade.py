@@ -73,25 +73,40 @@ class HBnBFacade:
 
 
     def create_review(self, review_data):
+        """Créer un avis et l'ajouter à la place correspondante."""
         user_id = review_data.get("user_id")
         place_id = review_data.get("place_id")
         rating = review_data.get("rating")
         text = review_data.get("text")
 
+        # Vérifie que l'utilisateur et le lieu existent
         user = self.user_repo.get(user_id)
         place = self.place_repo.get(place_id)
         if not user or not place:
             return {"error": "Invalid user_id or place_id"}, 400
 
-        if not isinstance(rating, int) or rating < 1 or rating > 5:
+        # Vérifie le rating
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
             return {"error": "Rating must be an integer between 1 and 5"}, 400
 
+        # Crée la review
         new_review = Review(text=text, rating=rating,
                             user_id=user_id, place_id=place_id)
 
+        # Ajoute la review au repository
         self.review_repo.add(new_review)
 
-        return new_review
+        # Lie la review au lieu
+        place.add_review(new_review)
+
+        # Retourne un dictionnaire prêt pour Flask
+        return {
+            "id": new_review.id,
+            "user_id": new_review.user_id,
+            "place_id": new_review.place_id,
+            "text": new_review.text,
+            "rating": new_review.rating
+        }, 201
 
 
     def get_review(self, review_id):

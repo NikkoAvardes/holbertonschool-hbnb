@@ -7,26 +7,29 @@ from .base_model import BaseModel  # Importe la classe de base
 
 # Classe Review : avis laissé par un utilisateur sur un lieu
 class Review(BaseModel):
-    """
-    Représente un avis laissé par un utilisateur sur un lieu.
-    """
-
-    def __init__(self, text, rating, place, user):
-        # Initialise l'avis avec ses attributs
+    def __init__(self, text, rating, user=None, place=None, user_id=None, place_id=None):
         super().__init__()
-        # Vérifie que le texte n'est pas vide
+
         if not text:
             raise ValueError("text vide")
-        # Vérifie que le rating est un entier entre 1 et 5
+
         if not isinstance(rating, int) or not (1 <= rating <= 5):
             raise ValueError("Le rating doit être un entier entre 1 et 5")
-        # Vérifie que place et user sont des instances valides
-        # (remplacer 'place' et 'user' par les classes réelles)
-        if not isinstance(place, Place) or not isinstance(user, User):
-            raise ValueError("Les objets 'place' et 'user' doivent être "
-                             "des instances valides")
-        # Initialise les attributs
+
+        # Accepte soit les objets, soit les IDs
+        if user:
+            self.user_id = user.id
+        elif user_id:
+            self.user_id = user_id
+        else:
+            raise ValueError("user ou user_id requis")
+
+        if place:
+            self.place_id = place.id
+        elif place_id:
+            self.place_id = place_id
+        else:
+            raise ValueError("place ou place_id requis")
+
         self.text = text
         self.rating = rating
-        self.place = place
-        self.user = user
