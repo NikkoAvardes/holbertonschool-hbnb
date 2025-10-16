@@ -44,7 +44,7 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
-        existing_place = facade.get_place(place_data)
+        existing_place = facade.get_place_by_title(place_data.get('title'))
         if existing_place:
             return {'error': 'Place already exist'}, 400
         new_place = facade.create_place(place_data)

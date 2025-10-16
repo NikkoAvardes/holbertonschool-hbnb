@@ -40,8 +40,12 @@ class HBnBFacade:
         return self.get_user(user_id)
 
     def get_place(self, place_id):
-        """Retrieve a place by its ID (to be implemented)."""
+        """Retrieve a place by its ID."""
         return self.place_repo.get(place_id)
+
+    def get_place_by_title(self, title):
+        """Retrieve a place by its title."""
+        return self.place_repo.get_by_attribute('title', title)
 
     def create_place(self, place_data):
         place = Place(**place_data)
