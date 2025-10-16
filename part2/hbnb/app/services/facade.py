@@ -117,7 +117,10 @@ class HBnBFacade:
 
 
     def get_all_reviews(self):
-        return self.review_repo.get_all()
+        reviews = self.review_repo.get_all()
+        # Par défaut, succès = 200
+        return reviews, 200
+
 
 
     def get_reviews_by_place(self, place_id):
