@@ -48,7 +48,17 @@ class HBnBFacade:
         return self.place_repo.get_by_attribute('title', title)
 
     def create_place(self, place_data):
-        place = Place(**place_data)
+        owner_id = place_data.get('owner_id')
+        owner = self.user_repo.get(owner_id)
+        if not owner:
+            return None, f"Owner with id {owner_id} not found"
+        
+        # Create place_data copy without owner_id and add owner object
+        place_args = place_data.copy()
+        place_args.pop('owner_id', None)  # Remove owner_id
+        place_args['owner'] = owner  # Add owner object
+        
+        place = Place(**place_args)
         self.place_repo.add(place)
         return place
 

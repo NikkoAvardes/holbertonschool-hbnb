@@ -47,7 +47,11 @@ class PlaceList(Resource):
         existing_place = facade.get_place_by_title(place_data.get('title'))
         if existing_place:
             return {'error': 'Place already exist'}, 400
-        new_place = facade.create_place(place_data)
+        
+        result = facade.create_place(place_data)
+        if isinstance(result, tuple):  # Error case
+            return {'error': result[1]}, 400
+        new_place = result
         return {
             'title': new_place.title,
             'description': new_place.description,
