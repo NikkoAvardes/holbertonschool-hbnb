@@ -53,6 +53,7 @@ class PlaceList(Resource):
             return {'error': result[1]}, 400
         new_place = result
         return {
+            'id': str(new_place.id),
             'title': new_place.title,
             'description': new_place.description,
             'price': new_place.price,
