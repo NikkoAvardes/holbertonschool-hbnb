@@ -85,17 +85,27 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # TODO:
-        # 1. Récupérer le place en utilisant la façade avec l'ID place_id
         place = facade.get_place(place_id)
-        # 2. Vérifier si le place existe
         if not place:
             return {'error': 'Place not found'}, 404
         return {
             'id': place.id,
-            'owner_id': place.owner.id,
-            'amenities': [a.id for a in place.amenities],
-            'reviews': [r.id for r in place.reviews]
+            'title': place.title,
+            'description': place.description,
+            'latitude': place.latitude,
+            'longitude': place.longitude,
+            'owner': {
+                'id': place.owner.id,
+                'first_name': place.owner.first_name,
+                'last_name': place.owner.last_name,
+                'email': place.owner.email
+            },
+            'amenities': [
+                {
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ]
         }, 200
 
     @api.expect(place_model)
