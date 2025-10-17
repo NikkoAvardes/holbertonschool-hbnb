@@ -168,7 +168,7 @@ class HBnBFacade:
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
-    
+
     def get_amenity(self, amenity_id):
         # Logic to retrieve an amenity by ID
         return self.amenity_repo.get(amenity_id)
