@@ -6,6 +6,7 @@ from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.places import api as places_ns
 
+
 def create_app():
     """
     Crée et configure l'application Flask avec l'API RESTx et les namespaces nécessaires.

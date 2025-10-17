@@ -11,6 +11,7 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
@@ -56,6 +57,7 @@ class ReviewResource(Resource):
         """Delete a review"""
         result, status = facade.delete_review(review_id)
         return result, status
+
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
