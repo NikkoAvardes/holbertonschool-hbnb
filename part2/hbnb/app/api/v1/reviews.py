@@ -18,11 +18,14 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        data = request.get_json()
-
-        result, status = facade.create_review(data)
-
-        return result, status
+        try:
+            data = request.get_json()
+            result, status = facade.create_review(data)
+            return result, status
+        except ValueError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            return {"error": "Invalid input data"}, 400
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -46,8 +49,14 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
-        data = request.get_json()
-        result, status = facade.update_review(review_id, data)
+        try:
+            data = request.get_json()
+            result, status = facade.update_review(review_id, data)
+            return result, status
+        except ValueError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            return {"error": "Invalid input data"}, 400
         return result, status
 
     @api.response(200, 'Review deleted successfully')

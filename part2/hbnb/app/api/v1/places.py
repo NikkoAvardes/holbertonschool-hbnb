@@ -44,26 +44,31 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
-        existing_place = facade.get_place_by_title(place_data.get('title'))
-        if existing_place:
-            return {'error': 'Place already exist'}, 400
-        
-        result = facade.create_place(place_data)
-        if isinstance(result, tuple):  # Error case
-            return {'error': result[1]}, 400
-        new_place = result
-        return {
-            'id': str(new_place.id),
-            'title': new_place.title,
-            'description': new_place.description,
-            'price': new_place.price,
-            'latitude': new_place.latitude,
-            'longitude': new_place.longitude,
-            'owner_id': new_place.owner_id,
-            'owner': new_place.owner.id,
-            'amenities': [a.id for a in new_place.amenities],
-            'reviews': [r.id for r in new_place.reviews]
-            }, 201
+        try:
+            existing_place = facade.get_place_by_title(place_data.get('title'))
+            if existing_place:
+                return {'error': 'Place already exist'}, 400
+            
+            result = facade.create_place(place_data)
+            if isinstance(result, tuple):  # Error case
+                return {'error': result[1]}, 400
+            new_place = result
+            return {
+                'id': str(new_place.id),
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                'owner_id': new_place.owner_id,
+                'owner': new_place.owner.id,
+                'amenities': [a.id for a in new_place.amenities],
+                'reviews': [r.id for r in new_place.reviews]
+                }, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception as e:
+            return {'error': 'Invalid input data'}, 400
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
