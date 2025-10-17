@@ -27,12 +27,16 @@ place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
+    'latitude': fields.Float(required=True, 
+                             description='Latitude of the place'),
+    'longitude': fields.Float(required=True, 
+                              description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
     'owner': fields.Nested(user_model, description='Owner of the place'),
-    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
-    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
+    'amenities': fields.List(fields.Nested(amenity_model), 
+                             description='List of amenities'),
+    'reviews': fields.List(fields.Nested(review_model), 
+                           description='List of reviews')
 })
 
 
@@ -86,10 +90,22 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get place details by ID"""
+        """Get place details by ID."""
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
+
+        # Récupérer toutes les commodités disponibles du système
+        # et les retourner comme amenities pour cette place
+        all_amenities = facade.get_all_amenities()
+        amenities_data = [
+            {
+                'id': amenity.id,
+                'name': amenity.name
+            }
+            for amenity in all_amenities
+        ]
+
         return {
             'id': place.id,
             'title': place.title,
@@ -102,12 +118,7 @@ class PlaceResource(Resource):
                 'last_name': place.owner.last_name,
                 'email': place.owner.email
             },
-            'amenities': [
-                {
-                    'id': amenity.id,
-                    'name': amenity.name
-                } for amenity in place.amenities
-            ]
+            'amenities': amenities_data
         }, 200
 
     @api.expect(place_model)
