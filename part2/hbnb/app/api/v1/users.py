@@ -37,7 +37,7 @@ class UserList(Resource):
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {'error': 'Invalid input data'}, 400
 
     def get(self):
@@ -89,5 +89,5 @@ class UserResource(Resource):
             }, 200
         except ValueError as e:
             return {'error': str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {'error': 'Invalid input data'}, 400

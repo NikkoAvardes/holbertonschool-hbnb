@@ -106,7 +106,7 @@ class PlaceResource(Resource):
                 {
                     'id': amenity.id,
                     'name': amenity.name
-                } for amenity in place.amenities
+                } for amenity in amenities
             ]
         }, 200
 

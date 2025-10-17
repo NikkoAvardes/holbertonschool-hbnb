@@ -11,6 +11,7 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
@@ -55,7 +56,7 @@ class ReviewResource(Resource):
             return result, status
         except ValueError as e:
             return {"error": str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {"error": "Invalid input data"}, 400
         return result, status
 
