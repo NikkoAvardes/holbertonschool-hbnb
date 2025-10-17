@@ -35,20 +35,27 @@ class AmenityList(Resource):
     def post(self):
         """Enregistre une nouvelle amenity"""
         data = api.payload
-        if not data or not data.get('name'):
-            return {"error": "Name is required"}, 400
-        new_amenity = facade.create_amenity(data)
-        if new_amenity is None:
-            return {"error": "Failed to create amenity"}, 500
-        return new_amenity
+        try:
+            if not data or not data.get('name'):
+                return {"error": "Name is required"}, 400
+            new_amenity = facade.create_amenity(data)
+            if new_amenity is None:
+                return {"error": "Failed to create amenity"}, 500
+            return new_amenity.to_dict(), 201
+        except ValueError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            return {"error": "Invalid input data"}, 400
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """Récupère la liste de toutes les amenities"""
-        amenities = facade.get_all_amenities
+        amenities = facade.get_all_amenities()
         if amenities is None:
             amenities = []
-        return amenities, 200
+        # On s'assure que chaque amenity est un dict
+        amenities_dicts = [a.to_dict() for a in amenities]
+        return amenities_dicts, 200
 
 
 # Route pour une amenity spécifique (par son id)
@@ -61,7 +68,7 @@ class AmenityResource(Resource):
         amenity = facade.get_amenity(amenity_id)
         if amenity is None:
             return {"error": 'Amenity not found'}, 404
-        return amenity, 200
+        return amenity.to_dict(), 200
 
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
@@ -70,7 +77,15 @@ class AmenityResource(Resource):
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
         data = api.payload
+        if not data or not data.get('name'):
+            return {"error": "Name is required"}, 400
+
+        # Debug: vérifier si l'amenity existe avant update
+        existing_amenity = facade.get_amenity(amenity_id)
+        if not existing_amenity:
+            return {"error": "Amenity not found"}, 404
+
         updated_amenity = facade.update_amenity(amenity_id, data)
         if not updated_amenity:
-            return {"error": "Amenity not found"}, 404
-        return updated_amenity, 200
+            return {"error": "Data is invalid"}, 400
+        return updated_amenity.to_dict(), 200

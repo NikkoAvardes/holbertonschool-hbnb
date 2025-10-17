@@ -12,14 +12,29 @@ class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
         # Initialise l'utilisateur avec ses attributs
         super().__init__()
+        
+        # Validation des champs requis
+        if not first_name or not first_name.strip():
+            raise ValueError("First name cannot be empty")
+        if not last_name or not last_name.strip():
+            raise ValueError("Last name cannot be empty")
+        if not email or not email.strip():
+            raise ValueError("Email cannot be empty")
+            
         # Vérifie la longueur des noms
-        if len(first_name) > 50 or len(last_name) > 50:
-            print("Le prénom ou le nom ne doit pas dépasser 50 caractères.")
+        if len(first_name) > 50:
+            raise ValueError("First name must not exceed 50 characters")
+        if len(last_name) > 50:
+            raise ValueError("Last name must not exceed 50 characters")
+            
         # Vérifie le format de l'email
-        if "@" not in email or "." not in email.split("@")[-1]:
-            print("Email invalide")
+        import re
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            raise ValueError("Invalid email format")
+            
         # Affecte les attributs
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
+        self.first_name = first_name.strip()
+        self.last_name = last_name.strip()
+        self.email = email.strip().lower()
         self.is_admin = is_admin  # Par défaut False

@@ -44,26 +44,31 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
-        existing_place = facade.get_place_by_title(place_data.get('title'))
-        if existing_place:
-            return {'error': 'Place already exist'}, 400
-        
-        result = facade.create_place(place_data)
-        if isinstance(result, tuple):  # Error case
-            return {'error': result[1]}, 400
-        new_place = result
-        return {
-            'id': str(new_place.id),
-            'title': new_place.title,
-            'description': new_place.description,
-            'price': new_place.price,
-            'latitude': new_place.latitude,
-            'longitude': new_place.longitude,
-            'owner_id': new_place.owner_id,
-            'owner': new_place.owner.id,
-            'amenities': [a.id for a in new_place.amenities],
-            'reviews': [r.id for r in new_place.reviews]
-            }, 201
+        try:
+            existing_place = facade.get_place_by_title(place_data.get('title'))
+            if existing_place:
+                return {'error': 'Place already exist'}, 400
+            
+            result = facade.create_place(place_data)
+            if isinstance(result, tuple):  # Error case
+                return {'error': result[1]}, 400
+            new_place = result
+            return {
+                'id': str(new_place.id),
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                'owner_id': new_place.owner_id,
+                'owner': new_place.owner.id,
+                'amenities': [a.id for a in new_place.amenities],
+                'reviews': [r.id for r in new_place.reviews]
+                }, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception as e:
+            return {'error': 'Invalid input data'}, 400
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
@@ -71,17 +76,13 @@ class PlaceList(Resource):
         places = facade.get_all_places()
         return [
             {
+                'id': place.id,
                 'title': place.title,
-                'description': place.description,
-                'price': place.price,
                 'latitude': place.latitude,
-                'longitude': place.longitude,
-                'owner_id': place.owner_id,
-                'owner': place.owner.id,
-                'amenities': [a.id for a in place.amenities],
-                'reviews': [r.id for r in place.reviews]
+                'longitude': place.longitude
             } for place in places
         ], 200
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -89,17 +90,27 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # TODO:
-        # 1. Récupérer le place en utilisant la façade avec l'ID place_id
         place = facade.get_place(place_id)
-        # 2. Vérifier si le place existe
         if not place:
             return {'error': 'Place not found'}, 404
         return {
             'id': place.id,
-            'owner_id': place.owner.id,
-            'amenities': [a.id for a in place.amenities],
-            'reviews': [r.id for r in place.reviews]
+            'title': place.title,
+            'description': place.description,
+            'latitude': place.latitude,
+            'longitude': place.longitude,
+            'owner': {
+                'id': place.owner.id,
+                'first_name': place.owner.first_name,
+                'last_name': place.owner.last_name,
+                'email': place.owner.email
+            },
+            'amenities': [
+                {
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ]
         }, 200
 
     @api.expect(place_model)
@@ -118,3 +129,13 @@ class PlaceResource(Resource):
             'amenities': [a.id for a in update_place.amenities],
             'reviews': [r.id for r in update_place.reviews]
         }, 200
+
+
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all reviews for a specific place"""
+        result, status = facade.get_reviews_by_place(place_id)
+        return result, status

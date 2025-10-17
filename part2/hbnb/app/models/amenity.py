@@ -12,7 +12,18 @@ class Amenity(BaseModel):
     def __init__(self, name):
         # Initialise la commodité avec un nom
         super().__init__()
-        # Vérifie la validité du nom
-        if name == "" or len(name) > 50:
-            print("Nom invalide")
-        self.name = name
+        
+        # Validation du nom
+        if not name or not name.strip():
+            raise ValueError("Name cannot be empty")
+        if len(name.strip()) > 50:
+            raise ValueError("Name must not exceed 50 characters")
+            
+        self.name = name.strip()
+
+    def to_dict(self):
+        """Retourne un dictionnaire représentant l'objet Amenity."""
+        return {
+            "id": self.id,
+            "name": self.name
+        }
