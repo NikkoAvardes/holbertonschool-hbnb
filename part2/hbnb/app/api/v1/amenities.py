@@ -35,12 +35,17 @@ class AmenityList(Resource):
     def post(self):
         """Enregistre une nouvelle amenity"""
         data = api.payload
-        if not data or not data.get('name'):
-            return {"error": "Name is required"}, 400
-        new_amenity = facade.create_amenity(data)
-        if new_amenity is None:
-            return {"error": "Failed to create amenity"}, 500
-        return new_amenity.to_dict(), 201
+        try:
+            if not data or not data.get('name'):
+                return {"error": "Name is required"}, 400
+            new_amenity = facade.create_amenity(data)
+            if new_amenity is None:
+                return {"error": "Failed to create amenity"}, 500
+            return new_amenity.to_dict(), 201
+        except ValueError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            return {"error": "Invalid input data"}, 400
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
