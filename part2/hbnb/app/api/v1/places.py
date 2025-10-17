@@ -120,12 +120,7 @@ class PlaceResource(Resource):
         update_place = facade.update_place(place_id, place_data)
         if not update_place:
             return {"error": "Place not found"}, 404
-        return {
-            'id': update_place.id,
-            'owner_id': update_place.owner.id,
-            'amenities': [a.id for a in update_place.amenities],
-            'reviews': [r.id for r in update_place.reviews]
-        }, 200
+        return {"message": "Place updated successfully"}, 200
 
 
 @api.route('/<place_id>/reviews')
