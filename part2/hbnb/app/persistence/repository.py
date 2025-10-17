@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 
-
 class Repository(ABC):
     """Abstract base class for a repository pattern."""
     @abstractmethod

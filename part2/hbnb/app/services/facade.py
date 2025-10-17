@@ -5,8 +5,6 @@ from app.models.review import Review
 from app.models.place import Place
 
 
-
-
 class HBnBFacade:
     """Facade for business logic operations in the HBnB application."""
     def __init__(self):
@@ -69,9 +67,6 @@ class HBnBFacade:
         self.place_repo.update(place_id, place_data)
         return self.get_place(place_id)
 
-
-
-
     def create_review(self, review_data):
         """Créer un avis et l'ajouter à la place correspondante."""
         user_id = review_data.get("user_id")
@@ -108,7 +103,6 @@ class HBnBFacade:
             "rating": new_review.rating
         }, 201
 
-
     def get_review(self, review_id):
         review = self.review_repo.get(review_id)
         if not review:
@@ -121,7 +115,6 @@ class HBnBFacade:
             'place_id': review.place_id
         }, 200
 
-
     def get_all_reviews(self):
         reviews = self.review_repo.get_all()
         # Convert to dictionary format for JSON serialization (only id, text, rating for list)
@@ -133,7 +126,6 @@ class HBnBFacade:
             } for review in reviews
         ]
         return reviews_list, 200
-
 
 
     def get_reviews_by_place(self, place_id):
@@ -151,7 +143,6 @@ class HBnBFacade:
         ]
         return reviews_list, 200
 
-
     def update_review(self, review_id, review_data):
         review = self.review_repo.get(review_id)
         if not review:
@@ -164,7 +155,6 @@ class HBnBFacade:
 
         self.review_repo.update(review_id, review_data)
         return {'message': 'Review updated successfully'}, 200
-
 
     def delete_review(self, review_id):
         review = self.review_repo.get(review_id)
@@ -189,4 +179,5 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, amenity_data):
         # Placeholder for logic to update an amenity
-        return self.amenity_repo.update(amenity_id, amenity_data)
+        self.amenity_repo.update(amenity_id, amenity_data)
+        return self.get_amenity(amenity_id)
