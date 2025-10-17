@@ -102,7 +102,8 @@ class HBnBFacade:
         if not place:
             return None
 
-        reviews = [r for r in self.review_repo.get_all() if r.place_id == place_id]
+        reviews = [r for r in self.review_repo.get_all() 
+                   if r.place_id == place_id]
         return reviews
 
     def update_review(self, review_id, review_data):
@@ -125,7 +126,7 @@ class HBnBFacade:
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
-    
+
     def get_amenity(self, amenity_id):
         # Logic to retrieve an amenity by ID
         return self.amenity_repo.get(amenity_id)
