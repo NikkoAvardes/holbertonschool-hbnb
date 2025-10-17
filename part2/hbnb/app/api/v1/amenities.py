@@ -40,11 +40,11 @@ class AmenityList(Resource):
                 return {"error": "Name is required"}, 400
             new_amenity = facade.create_amenity(data)
             if new_amenity is None:
-                return {"error": "Failed to create amenity"}, 500
+                return {"error": "Failed to create amenity"}, 409
             return new_amenity.to_dict(), 201
         except ValueError as e:
             return {"error": str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {"error": "Invalid input data"}, 400
 
     @api.response(200, 'List of amenities retrieved successfully')
@@ -88,4 +88,4 @@ class AmenityResource(Resource):
         updated_amenity = facade.update_amenity(amenity_id, data)
         if not updated_amenity:
             return {"error": "Data is invalid"}, 400
-        return updated_amenity.to_dict(), 200
+        return {"message": "Amenity updated successfully"}, 200
