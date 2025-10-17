@@ -117,7 +117,8 @@ class HBnBFacade:
 
     def get_all_reviews(self):
         reviews = self.review_repo.get_all()
-        # Convert to dictionary format for JSON serialization (only id, text, rating for list)
+        # Convert to dictionary format for JSON serialization
+        # (only id, text, rating for list)
         reviews_list = [
             {
                 'id': review.id,
@@ -127,13 +128,13 @@ class HBnBFacade:
         ]
         return reviews_list, 200
 
-
     def get_reviews_by_place(self, place_id):
         place = self.place_repo.get(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
 
-        reviews = [r for r in self.review_repo.get_all() if r.place_id == place_id]
+        reviews = [r for r in self.review_repo.get_all()
+                   if r.place_id == place_id]
         reviews_list = [
             {
                 'id': review.id,
@@ -150,7 +151,9 @@ class HBnBFacade:
 
         # Validate rating if provided
         rating = review_data.get('rating')
-        if rating is not None and (not isinstance(rating, int) or not (1 <= rating <= 5)):
+        if rating is not None and (not
+                                   isinstance(rating,
+                                              int) or not (1 <= rating <= 5)):
             return {"error": "Rating must be an integer between 1 and 5"}, 400
 
         self.review_repo.update(review_id, review_data)
