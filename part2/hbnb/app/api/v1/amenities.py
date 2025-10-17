@@ -44,7 +44,7 @@ class AmenityList(Resource):
             return new_amenity.to_dict(), 201
         except ValueError as e:
             return {"error": str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {"error": "Invalid input data"}, 400
 
     @api.response(200, 'List of amenities retrieved successfully')
