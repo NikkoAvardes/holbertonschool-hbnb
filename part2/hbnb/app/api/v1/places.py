@@ -61,10 +61,10 @@ class PlaceList(Resource):
                 'latitude': new_place.latitude,
                 'longitude': new_place.longitude,
                 'owner_id': new_place.owner_id
-                }, 201
+            }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
-        except Exception as e:
+        except Exception:
             return {'error': 'Invalid input data'}, 400
 
     @api.response(200, 'List of places retrieved successfully')
