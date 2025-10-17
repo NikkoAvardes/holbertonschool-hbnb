@@ -72,7 +72,15 @@ class AmenityResource(Resource):
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
         data = api.payload
+        if not data or not data.get('name'):
+            return {"error": "Name is required"}, 400
+
+        # Debug: vérifier si l'amenity existe avant update
+        existing_amenity = facade.get_amenity(amenity_id)
+        if not existing_amenity:
+            return {"error": "Amenity not found"}, 404
+
         updated_amenity = facade.update_amenity(amenity_id, data)
         if not updated_amenity:
-            return {"error": "Amenity not found"}, 404
+            return {"error": "Data is invalid"}, 400
         return updated_amenity.to_dict(), 200
