@@ -1,46 +1,104 @@
+"""Repository pattern implementation for data persistence."""
+
 from abc import ABC, abstractmethod
 
 
 class Repository(ABC):
-    """Abstract base class for a repository pattern."""
+    """
+    Abstract base class for repository pattern implementation.
+
+    Defines the interface that all concrete repositories must implement
+    for consistent data access operations.
+    """
+
     @abstractmethod
     def add(self, obj):
-        """Add an object to the repository."""
+        """
+        Add an object to the repository.
+
+        Args:
+            obj: The object to add to the repository
+        """
         pass
 
     @abstractmethod
     def get(self, obj_id):
-        """Retrieve an object by its ID."""
+        """
+        Retrieve an object by its ID.
+
+        Args:
+            obj_id (str): The unique identifier of the object
+
+        Returns:
+            The object if found, None otherwise
+        """
         pass
 
     @abstractmethod
     def get_all(self):
-        """Retrieve all objects from the repository."""
+        """
+        Retrieve all objects from the repository.
+
+        Returns:
+            list: List of all objects in the repository
+        """
         pass
 
     @abstractmethod
     def update(self, obj_id, data):
-        """Update an object with new data by its ID."""
+        """
+        Update an object with new data by its ID.
+
+        Args:
+            obj_id (str): The unique identifier of the object
+            data (dict): Dictionary containing the new data
+        """
         pass
 
     @abstractmethod
     def delete(self, obj_id):
-        """Delete an object from the repository by its ID."""
+        """
+        Delete an object from the repository by its ID.
+
+        Args:
+            obj_id (str): The unique identifier of the object
+        """
         pass
 
     @abstractmethod
     def get_by_attribute(self, attr_name, attr_value):
-        """Retrieve an object by a specific attribute value."""
+        """
+        Retrieve an object by a specific attribute value.
+
+        Args:
+            attr_name (str): The name of the attribute to search by
+            attr_value: The value to search for
+
+        Returns:
+            The first object with matching attribute, None if not found
+        """
         pass
 
 
 class InMemoryRepository(Repository):
+    """
+    In-memory implementation of the Repository pattern.
+
+    Stores objects in a dictionary for quick access during development
+    and testing. Data is not persisted between application restarts.
+    """
+
     def __init__(self):
         """Initialize an in-memory repository with a storage dictionary."""
         self._storage = {}
 
     def add(self, obj):
-        """Add an object to the in-memory storage."""
+        """
+        Add an object to the in-memory storage.
+
+        Args:
+            obj: The object to add (must have an 'id' attribute)
+        """
         self._storage[obj.id] = obj
 
     def get(self, obj_id):

@@ -1,4 +1,5 @@
-"""Initialisation du module principal Flask et de l'API RESTx pour l'application HBnB."""
+"""Flask application initialization and API setup for HBnB application."""
+
 from flask import Flask
 from flask_restx import Api
 from app.api.v1.users import api as users_ns
@@ -9,8 +10,13 @@ from app.api.v1.places import api as places_ns
 
 def create_app():
     """
-    Crée et configure l'application Flask avec l'API RESTx et les namespaces nécessaires.
-    Retourne l'application Flask prête à être lancée.
+    Create and configure the Flask application with RESTx API.
+    
+    Sets up the main Flask app with API documentation and registers
+    all necessary namespaces for different endpoints.
+    
+    Returns:
+        Flask: Configured Flask application instance ready to run
     """
     app = Flask(__name__)
     api = Api(
