@@ -1,20 +1,80 @@
-# TODO: Import required modules (uuid, datetime, etc.)
-# TODO: Define Place class with the following attributes:
-#       - id (string, unique identifier, auto-generated)
-#       - title (string, required, max 100 characters)
-#       - description (string, optional)
-#       - price (float, required, must be positive)
-#       - latitude (float, required, range -90.0 to 90.0)
-#       - longitude (float, required, range -180.0 to 180.0)
-#       - owner_id (string, required, foreign key to User)
-#       - reviews (list, relationship to Review objects)
-#       - amenities (list, relationship to Amenity objects)
-#       - created_at (datetime, auto-generated)
-#       - updated_at (datetime, auto-updated)
-# TODO: Implement __init__ method with validation
-# TODO: Implement validate_coordinates method
-# TODO: Implement add_review method
-# TODO: Implement add_amenity method
-# TODO: Implement update method to modify place data
-# TODO: Implement to_dict method for serialization
-# TODO: Add business rule: owner cannot review their own place
+#!/usr/bin/python3
+"""Place model module."""
+
+from app.models.base_model import BaseModel
+
+
+class Place(BaseModel):
+    """
+    Represents a place/accommodation that can be booked.
+
+    A place belongs to an owner (User) and can have multiple reviews
+    and amenities associated with it.
+    """
+
+    def __init__(self, title, description, price, latitude, longitude, owner):
+        """
+        Initialize a new Place instance.
+
+        Args:
+            title (str): Place title (cannot be empty)
+            description (str): Place description (optional)
+            price (float): Price per night (must be positive)
+            latitude (float): Geographic latitude (-90 to 90)
+            longitude (float): Geographic longitude (-180 to 180)
+            owner (User): The user who owns this place
+
+        Raises:
+            ValueError: If any validation fails
+        """
+        super().__init__()
+
+        # Validation des champs requis
+        if not title or not title.strip():
+            raise ValueError("Title cannot be empty")
+
+        # Validation du prix
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Price must be a positive number")
+
+        # Validation de la latitude
+        if (not isinstance(latitude, (int, float)) or
+                latitude < -90 or latitude > 90):
+            raise ValueError("Latitude must be between -90 and 90")
+
+        # Validation de la longitude
+        if (not isinstance(longitude, (int, float)) or
+                longitude < -180 or longitude > 180):
+            raise ValueError("Longitude must be between -180 and 180")
+
+        # Validation du propriétaire
+        if not owner:
+            raise ValueError("Owner is required")
+
+        self.title = title.strip()
+        self.description = description.strip() if description else ""
+        self.price = float(price)
+        self.latitude = float(latitude)
+        self.longitude = float(longitude)
+        self.owner = owner
+        self.owner_id = owner.id
+        self.reviews = []
+        self.amenities = []
+
+    def add_review(self, review):
+        """
+        Add a review to this place.
+
+        Args:
+            review (Review): The review to add
+        """
+        self.reviews.append(review)
+
+    def add_amenity(self, amenity):
+        """
+        Add an amenity to this place.
+
+        Args:
+            amenity (Amenity): The amenity to add
+        """
+        self.amenities.append(amenity)
