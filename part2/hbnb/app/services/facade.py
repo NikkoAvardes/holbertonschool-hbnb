@@ -1,3 +1,5 @@
+"""Facade module for business logic operations."""
+
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -6,7 +8,13 @@ from app.models.place import Place
 
 
 class HBnBFacade:
-    """Facade for business logic operations in the HBnB application."""
+    """
+    Facade for business logic operations in the HBnB application.
+
+    Provides a unified interface for all CRUD operations across
+    different entities (users, places, reviews, amenities).
+    """
+
     def __init__(self):
         """Initialize repositories for all entities."""
         self.user_repo = InMemoryRepository()
@@ -14,18 +22,43 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
+    # User operations
     def create_user(self, user_data):
-        """Create a new user and add it to the repository."""
+        """
+        Create a new user and add it to the repository.
+
+        Args:
+            user_data (dict): Dictionary containing user information
+
+        Returns:
+            User: The created user object
+        """
         user = User(**user_data)
         self.user_repo.add(user)
         return user
 
     def get_user(self, user_id):
-        """Retrieve a user by their ID."""
+        """
+        Retrieve a user by their ID.
+
+        Args:
+            user_id (str): The unique identifier of the user
+
+        Returns:
+            User: The user object if found, None otherwise
+        """
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        """Retrieve a user by their email address."""
+        """
+        Retrieve a user by their email address.
+
+        Args:
+            email (str): The email address to search for
+
+        Returns:
+            User: The user object if found, None otherwise
+        """
         return self.user_repo.get_by_attribute('email', email)
 
     def get_all_users(self):
@@ -50,12 +83,12 @@ class HBnBFacade:
         owner = self.user_repo.get(owner_id)
         if not owner:
             return None, f"Owner with id {owner_id} not found"
-        
+
         # Create place_data copy without owner_id and add owner object
         place_args = place_data.copy()
         place_args.pop('owner_id', None)  # Remove owner_id
         place_args['owner'] = owner  # Add owner object
-        
+
         place = Place(**place_args)
         self.place_repo.add(place)
         return place
@@ -163,7 +196,7 @@ class HBnBFacade:
         review = self.review_repo.get(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
-        
+
         self.review_repo.delete(review_id)
         return {'message': 'Review deleted successfully'}, 200
 
