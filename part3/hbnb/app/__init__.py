@@ -3,6 +3,7 @@
 from flask import Flask
 from flask_restx import Api
 from flask_bcrypt import Bcrypt
+from flask_sqlalchemy import SQLAlchemy
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.reviews import api as reviews_ns
@@ -13,6 +14,7 @@ from flask_jwt_extended import JWTManager
 
 bcrypt = Bcrypt()
 jwt = JWTManager()
+db = SQLAlchemy()
 
 
 def create_app(config_class="config.DevelopmentConfig"):
@@ -29,6 +31,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     app.config.from_object(config_class)
     bcrypt.init_app(app)
     jwt.init_app(app)
+    db.init_app(app)
     api = Api(
         app,
         version='1.0',
