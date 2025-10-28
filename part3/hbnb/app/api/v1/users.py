@@ -47,7 +47,7 @@ class UserList(Resource):
             new_user.hash_password(password)
             return {
                 'id': new_user.id,
-								'message' : 'user successfully created'
+				'message' : 'user successfully created'
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -127,3 +127,50 @@ class UserResource(Resource):
             return {'error': str(e)}, 400
         except Exception:
             return {'error': 'Invalid input data'}, 400
+
+api = Namespace('users', description='User operations')
+
+@api.route('/')
+class AdminUserCreate(Resource):
+    @jwt_required()
+    def post(self):
+        """Créer un nouvel utilisateur (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        user_data = request.json
+        email = user_data.get('email')
+
+        if facade.get_user_by_email(email):
+            return {'error': 'Email already registered'}, 400
+
+        # TODO: Créer le nouvel utilisateur avec les données reçues
+        # Exemple : new_user = facade.create_user(user_data)
+        # return new_user.to_dict(), 201
+        pass
+
+
+@api.route('/<user_id>')
+class AdminUserModify(Resource):
+    @jwt_required()
+    def put(self, user_id):
+        """Modifier un utilisateur (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        data = request.json
+        email = data.get('email')
+
+        if email:
+            existing_user = facade.get_user_by_email(email)
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already in use'}, 400
+
+        # TODO: Mettre à jour l’utilisateur
+        # Exemple : updated_user = facade.update_user(user_id, data)
+        # return updated_user.to_dict(), 200
+        pass
