@@ -1,3 +1,0 @@
-flask
-flask-restx
-flask-jwt-extended
