@@ -85,8 +85,7 @@ hbnb/
 ### 👤 Utilisateurs (`/api/v1/users/`)
 - **POST** : créer un utilisateur  
 - **GET** : récupérer tous les utilisateurs ou un utilisateur spécifique  
-- **PUT** : mettre à jour un utilisateur  
-- **DELETE** : supprimer un utilisateur  
+- **PUT** : mettre à jour un utilisateur
 
 ### 🏠 Logements (`/api/v1/places/`)
 - **POST** : créer un logement avec validation des champs (prix, coordonnées GPS, etc.)  
