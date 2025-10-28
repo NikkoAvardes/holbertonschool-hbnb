@@ -1,6 +1,7 @@
 """User API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 from flask import request
 from flask_restx import Namespace, Resource
@@ -102,10 +103,12 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
+    @jwt_required()
     @api.expect(user_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
     def put(self, user_id):
         """
         Update a user by ID.
@@ -116,7 +119,20 @@ class UserResource(Resource):
         Returns:
             dict: Updated user details if successful, error message if failed
         """
+        current_user = get_jwt_identity()
+
+        # Check if the user is trying to modify their own account
+        if current_user != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
         user_data = api.payload
+
+        # Prevent modification of email and password
+        if 'email' in user_data:
+            return {'error': 'You cannot modify email or password'}, 400
+        if 'password' in user_data:
+            return {'error': 'You cannot modify email or password'}, 400
+
         try:
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:

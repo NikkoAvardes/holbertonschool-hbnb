@@ -1,4 +1,3 @@
-tests/HBNB_API.postman_collection.json
 __pycache__/
 *.pyc
 *.pyo
@@ -7,4 +6,4 @@ __pycache__/
 env/
 venv/
 .vscode/
-part3/tests/HBNB_API.postman_collection.json
+part3/hbnb/tests/HBNB_API.postman_collection.json
