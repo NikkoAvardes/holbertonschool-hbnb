@@ -7,3 +7,4 @@ __pycache__/
 env/
 venv/
 .vscode/
+part3/tests/HBNB_API.postman_collection.json
