@@ -1,6 +1,8 @@
 """User API endpoints for HBnB application."""
 
+from flask import request
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('users', description='User operations')
@@ -172,7 +174,21 @@ class AdminUserModify(Resource):
             if existing_user and existing_user.id != user_id:
                 return {'error': 'Email already in use'}, 400
 
-        # TODO: Mettre à jour l’utilisateur
+        # TODO: Mettre à jour l'utilisateur
         # Exemple : updated_user = facade.update_user(user_id, data)
         # return updated_user.to_dict(), 200
         pass
+
+
+@api.route('/protected')
+class ProtectedResource(Resource):
+    @jwt_required()
+    def get(self):
+        """A protected endpoint that requires a valid JWT token"""
+        print("jwt------")
+        print(get_jwt_identity())
+        current_user = get_jwt_identity()  # Retrieve the user's identity from the token
+        # if you need to see if the user is an admin or not, you can access additional claims using get_jwt() :
+        # additional_claims = get_jwt()
+        # additional_claims["is_admin"] -> True or False
+        return {'message': f'Hello, user {current_user}'}, 200
