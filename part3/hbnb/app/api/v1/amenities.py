@@ -2,11 +2,8 @@
 """Amenity API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required
 from app.services import facade
-from flask import request
-from flask_restx import Namespace, Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-
 
 # Create namespace for amenity-related routes
 api = Namespace('amenities', description='Amenity operations')
@@ -103,42 +100,3 @@ class AmenityResource(Resource):
         if not updated_amenity:
             return {"error": "Data is invalid"}, 400
         return {"message": "Amenity updated successfully"}, 200
-
-api = Namespace('amenities', description='Amenities operations')
-
-
-@api.route('/')
-class AdminAmenityCreate(Resource):
-    @jwt_required()
-    def post(self):
-        """Créer un nouvel amenity (admin uniquement)"""
-        current_user = get_jwt_identity()
-        
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
-        amenity_data = request.json
-        name = amenity_data.get('name')
-
-        if facade.get_amenity_by_name(name): 
-            return {'error': 'Amenity already exists'}, 400
-
-        # TODO: Créer le nouvel amenity
-        new_amenity = facade.create_amenity(amenity_data)
-        return new_amenity.to_dict(), 201
-
-@api.route('/<amenity_id>')
-class AdminAmenityModify(Resource):
-    @jwt_required()
-    def put(self, amenity_id):
-        """Modifier un amenity (admin uniquement)"""
-        current_user = get_jwt_identity()
-        
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
-        data = request.json
-
-
-        updated_amenity = facade.update_amenity(amenity_id, data)
-        return updated_amenity.to_dict(), 200
