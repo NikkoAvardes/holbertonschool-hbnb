@@ -47,7 +47,7 @@ class UserList(Resource):
             new_user.hash_password(password)
             return {
                 'id': new_user.id,
-								'message' : 'user successfully created'
+				'message' : 'user successfully created'
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
