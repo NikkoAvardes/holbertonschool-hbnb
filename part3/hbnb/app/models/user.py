@@ -15,7 +15,8 @@ class User(BaseModel):
     and write reviews. All users must have a unique email address.
     """
 
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email,
+                 password=None, is_admin=False):
         """
         Initialize a new User instance.
 
@@ -23,6 +24,7 @@ class User(BaseModel):
             first_name (str): User's first name (max 50 characters)
             last_name (str): User's last name (max 50 characters)
             email (str): User's email address (must be valid format)
+            password (str, optional): User's password (will be hashed)
             is_admin (bool, optional): Whether user has admin privileges.
             Defaults to False.
 
@@ -56,13 +58,17 @@ class User(BaseModel):
         self.last_name = last_name.strip()
         self.email = email.strip().lower()
         self.is_admin = is_admin
+        self.password = password
+
+        if password:
+            self.hash_password(password)
 
     # sert à enregistrer un mot de passe de façon sécurisée
     def hash_password(self, password):
         """Hashes the password before storing it."""
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password = generate_password_hash(password).decode('utf-8')
 
     # permet de vérifier un mot de passe lors de la connexion
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self.password, password)
+        return check_password_hash(self.password, password)
