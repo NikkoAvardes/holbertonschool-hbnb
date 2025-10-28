@@ -1,6 +1,8 @@
 """Place API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
+from flask import request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('places', description='Place operations')
@@ -151,3 +153,28 @@ class PlaceReviewList(Resource):
         """Get all reviews for a specific place"""
         result, status = facade.get_reviews_by_place(place_id)
         return result, status
+
+@api.route('/<place_id>')
+class AdminPlaceModify(Resource):
+    @jwt_required()
+    def put(self, place_id):
+        """Permet aux admins de modifier un place sans restriction de propriété"""
+        current_user = get_jwt_identity()
+
+        # Si le token ne contient pas la clé is_admin, on considère False par défaut
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+
+        # Récupération du place depuis la façade
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        # Si l'utilisateur n'est pas admin ET n'est pas propriétaire → refus
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
+        # TODO: Mettre ici la logique pour mettre à jour le place
+        data = request.json
+        updated_place = facade.update_place(place_id, data)
+        return updated_place.to_dict(), 200

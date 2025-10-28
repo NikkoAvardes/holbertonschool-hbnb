@@ -3,6 +3,10 @@
 
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask import request
+from flask_restx import Namespace, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+
 
 # Create namespace for amenity-related routes
 api = Namespace('amenities', description='Amenity operations')
@@ -116,14 +120,12 @@ class AdminAmenityCreate(Resource):
         amenity_data = request.json
         name = amenity_data.get('name')
 
-        # TODO: Vérifier si l’amenity existe déjà
-        # Exemple : if facade.get_amenity_by_name(name): return {'error': 'Amenity already exists'}, 400
+        if facade.get_amenity_by_name(name): 
+            return {'error': 'Amenity already exists'}, 400
 
         # TODO: Créer le nouvel amenity
-        # Exemple : new_amenity = facade.create_amenity(amenity_data)
-        # return new_amenity.to_dict(), 201
-        pass
-
+        new_amenity = facade.create_amenity(amenity_data)
+        return new_amenity.to_dict(), 201
 
 @api.route('/<amenity_id>')
 class AdminAmenityModify(Resource):
@@ -137,7 +139,6 @@ class AdminAmenityModify(Resource):
 
         data = request.json
 
-        # TODO: Mettre à jour l’amenity
-        # Exemple : updated_amenity = facade.update_amenity(amenity_id, data)
-        # return updated_amenity.to_dict(), 200
-        pass
+
+        updated_amenity = facade.update_amenity(amenity_id, data)
+        return updated_amenity.to_dict(), 200
