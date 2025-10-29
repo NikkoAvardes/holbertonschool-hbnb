@@ -1,7 +1,11 @@
 """User API endpoints for HBnB application."""
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
+from flask import request
+from flask_restx import Namespace, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+
 
 api = Namespace('users', description='User operations')
 user_model = api.model(
@@ -52,7 +56,7 @@ class UserList(Resource):
             new_user.hash_password(password)
             return {
                 'id': new_user.id,
-                'message' : 'user successfully created'
+				'message' : 'user successfully created'
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -103,11 +107,12 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
+    @jwt_required()
     @api.expect(user_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
-    @jwt_required()
+    @api.response(403, 'Unauthorized action')
     def put(self, user_id):
         """
         Update a user by ID.
@@ -118,17 +123,20 @@ class UserResource(Resource):
         Returns:
             dict: Updated user details if successful, error message if failed
         """
-        claims = get_jwt()
-        if not claims.get('is_admin'):
-            return {'error': 'Admin privileges requires'}, 403
+        current_user = get_jwt_identity()
+
+        # Check if the user is trying to modify their own account
+        if current_user != user_id:
+            return {'error': 'Unauthorized action'}, 403
 
         user_data = api.payload
 
-        # Vérifier l'unicité de l'email si il est modifié
+        # Prevent modification of email and password
         if 'email' in user_data:
-            existing_user = facade.get_user_by_email(user_data['email'])
-            if existing_user and existing_user.id != user_id:
-                return {'error': 'Email already in use'}, 400
+            return {'error': 'You cannot modify email or password'}, 400
+        if 'password' in user_data:
+            return {'error': 'You cannot modify email or password'}, 400
+
         try:
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
@@ -143,3 +151,71 @@ class UserResource(Resource):
             return {'error': str(e)}, 400
         except Exception:
             return {'error': 'Invalid input data'}, 400
+
+api = Namespace('users', description='User operations')
+
+@api.route('/')
+class AdminUserCreate(Resource):
+    @jwt_required()
+    def post(self):
+        """Créer un nouvel utilisateur (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        user_data = request.json
+        email = user_data.get('email')
+
+        if facade.get_user_by_email(email):
+            return {'error': 'Email already registered'}, 400
+
+        # TODO: Créer le nouvel utilisateur avec les données reçues
+        new_user = facade.create_user(user_data)
+        return new_user.to_dict(), 201
+
+
+@api.route('/<user_id>')
+class AdminUserModify(Resource):
+    @jwt_required()
+    def put(self, user_id):
+        """Modifier un utilisateur (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        data = request.json
+        email = data.get('email')
+
+        if email:
+            existing_user = facade.get_user_by_email(email)
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already in use'}, 400
+
+        # TODO: Mettre à jour l’utilisateur
+        updated_user = facade.update_user(user_id, data)
+        return updated_user.to_dict(), 200
+
+
+@api.route('/users/<user_id>')
+class AdminUserResource(Resource):
+    @jwt_required()
+    def put(self, user_id):
+        """Modifier un utilisateur (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        data = request.json
+        email = data.get('email')
+
+        if email:
+            existing_user = facade.get_user_by_email(email)
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email is already in use'}, 400
+
+        # TODO: Mettre à jour les informations de l’utilisateur (email, password, etc.)
+        updated_user = facade.update_user(user_id, data)
+        return updated_user.to_dict(), 200

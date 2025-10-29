@@ -2,7 +2,9 @@
 
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask import request
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -47,9 +49,11 @@ place_model = api.model('Place', {
 class PlaceList(Resource):
     """Resource for place list operations (GET, POST)."""
 
+    @jwt_required()
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Unauthorized')
     def post(self):
         """
         Register a new place.
@@ -57,7 +61,10 @@ class PlaceList(Resource):
         Creates a new place with the provided details. The owner must exist
         and geographic coordinates must be valid.
         """
+        current_user = get_jwt_identity()
         place_data = api.payload
+
+        place_data['owner_id'] = current_user
         try:
             existing_place = facade.get_place_by_title(place_data.get('title'))
             if existing_place:
@@ -131,11 +138,13 @@ class PlaceResource(Resource):
             'amenities': amenities_data
         }, 200
 
+    @jwt_required()
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     @jwt_required()
+    @api.response(403, 'Unauthorized action')
     def put(self, place_id):
         """Update a place's information"""
         user_id = get_jwt_identity()
@@ -149,11 +158,27 @@ class PlaceResource(Resource):
         if not is_admin and place.owner_id != user_id:
             return {'error': 'Unauthorized action'}, 403
 
+        current_user = get_jwt_identity()
         place_data = api.payload
-        update_place = facade.update_place(place_id, place_data)
-        if not update_place:
+
+        # Check if place exists and get its details
+        place = facade.get_place(place_id)
+        if not place:
             return {"error": "Place not found"}, 404
-        return {"message": "Place updated successfully"}, 200
+
+        # Check if the current user is the owner of the place
+        if place.owner_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
+
+        try:
+            update_place = facade.update_place(place_id, place_data)
+            if not update_place:
+                return {"error": "Place not found"}, 404
+            return {"message": "Place updated successfully"}, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception:
+            return {'error': 'Invalid input data'}, 400
 
 
 @api.route('/<place_id>/reviews')
@@ -164,3 +189,31 @@ class PlaceReviewList(Resource):
         """Get all reviews for a specific place"""
         result, status = facade.get_reviews_by_place(place_id)
         return result, status
+
+
+@api.route('/<place_id>')
+class AdminPlaceModify(Resource):
+    @jwt_required()
+    def put(self, place_id):
+        """Permet aux admins de modifier un place
+        sans restriction de propriété"""
+        current_user = get_jwt_identity()
+
+        # Si le token ne contient pas la clé is_admin,
+        # on considère False par défaut
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+
+        # Récupération du place depuis la façade
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        # Si l'utilisateur n'est pas admin ET n'est pas propriétaire → refus
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
+        # TODO: Mettre ici la logique pour mettre à jour le place
+        data = request.json
+        updated_place = facade.update_place(place_id, data)
+        return updated_place.to_dict(), 200

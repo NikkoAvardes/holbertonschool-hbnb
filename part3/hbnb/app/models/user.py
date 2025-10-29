@@ -61,7 +61,7 @@ class User(BaseModel):
         self.password = password
 
         if password:
-            self.hash_password(password)
+          self.hash_password(password)
 
     # sert à enregistrer un mot de passe de façon sécurisée
     def hash_password(self, password):

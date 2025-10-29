@@ -4,6 +4,10 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
+from flask import request
+from flask_restx import Namespace, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+
 
 # Create namespace for amenity-related routes
 api = Namespace('amenities', description='Amenity operations')
@@ -112,7 +116,6 @@ class AmenityResource(Resource):
             return {"error": "Data is invalid"}, 400
         return {"message": "Amenity updated successfully"}, 200
 
-
 api = Namespace('amenities', description='Amenities operations')
 
 
@@ -121,16 +124,7 @@ class AdminAmenityCreate(Resource):
     @jwt_required()
     def post(self):
         """Créer un nouvel amenity (admin uniquement)"""
-        # TODO: Corriger la logique JWT selon l'exemple
-        # get_jwt_identity() retourne seulement user_id (string)
-        # Pour is_admin il faut utiliser get_jwt()
-        current_user = get_jwt_identity()  # Retourne seulement user_id
-        
-        # TODO: Importer get_jwt et changer la logique:
-        # from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-        # claims = get_jwt()
-        # if not claims.get('is_admin'):
-        #     return {'error': 'Admin privileges required'}, 403
+        current_user = get_jwt_identity()
         
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
@@ -138,10 +132,25 @@ class AdminAmenityCreate(Resource):
         amenity_data = request.json
         name = amenity_data.get('name')
 
-        # TODO: Vérifier si l’amenity existe déjà
-        # Exemple : if facade.get_amenity_by_name(name): return {'error': 'Amenity already exists'}, 400
+        if facade.get_amenity_by_name(name): 
+            return {'error': 'Amenity already exists'}, 400
 
         # TODO: Créer le nouvel amenity
-        # Exemple : new_amenity = facade.create_amenity(amenity_data)
-        # return new_amenity.to_dict(), 201
-        pass
+        new_amenity = facade.create_amenity(amenity_data)
+        return new_amenity.to_dict(), 201
+
+@api.route('/<amenity_id>')
+class AdminAmenityModify(Resource):
+    @jwt_required()
+    def put(self, amenity_id):
+        """Modifier un amenity (admin uniquement)"""
+        current_user = get_jwt_identity()
+        
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
+        data = request.json
+
+
+        updated_amenity = facade.update_amenity(amenity_id, data)
+        return updated_amenity.to_dict(), 200

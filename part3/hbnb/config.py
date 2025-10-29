@@ -1,6 +1,7 @@
 """Configuration settings for the HBnB application."""
 
 import os
+from datetime import timedelta
 
 
 class Config:

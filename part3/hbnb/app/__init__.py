@@ -20,11 +20,15 @@ db = SQLAlchemy()
 def create_app(config_class="config.DevelopmentConfig"):
     """
     Create and configure the Flask application with RESTx API.
+    Create and configure the Flask application with RESTx API.
     
+    Sets up the main Flask app with API documentation and registers
+    all necessary namespaces for different endpoints.
     Sets up the main Flask app with API documentation and registers
     all necessary namespaces for different endpoints.
     
     Returns:
+        Flask: Configured Flask application instance ready to run
         Flask: Configured Flask application instance ready to run
     """
     app = Flask(__name__)
@@ -44,6 +48,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(places_ns, path='/api/v1/places')
+    api.add_namespace(auth_ns, path='/api/v1/auth')
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
     return app
