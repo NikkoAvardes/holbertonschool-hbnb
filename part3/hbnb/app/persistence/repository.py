@@ -1,5 +1,4 @@
 """Repository pattern implementation for data persistence."""
-from app.models import User, Place, Review, Amenity
 from abc import ABC, abstractmethod
 from app import db
 

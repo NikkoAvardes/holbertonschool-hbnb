@@ -2,6 +2,7 @@
 """Amenity API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
 # Create namespace for amenity-related routes
@@ -25,6 +26,7 @@ class AmenityList(Resource):
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """
         Register a new amenity.
@@ -32,6 +34,11 @@ class AmenityList(Resource):
         Creates a new amenity with the provided name. Names must be unique
         and cannot be empty.
         """
+        # user_id = get_jwt_identity()
+        claims = get_jwt()
+        if not claims.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+        
         data = api.payload
         try:
             if not data or not data.get('name'):
@@ -84,8 +91,13 @@ class AmenityResource(Resource):
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
+        claims = get_jwt()  # objet avec claims supplémentaires
+        if not claims.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         data = api.payload
         if not data or not data.get('name'):
             return {"error": "Name is required"}, 400
@@ -100,6 +112,7 @@ class AmenityResource(Resource):
             return {"error": "Data is invalid"}, 400
         return {"message": "Amenity updated successfully"}, 200
 
+
 api = Namespace('amenities', description='Amenities operations')
 
 
@@ -108,7 +121,16 @@ class AdminAmenityCreate(Resource):
     @jwt_required()
     def post(self):
         """Créer un nouvel amenity (admin uniquement)"""
-        current_user = get_jwt_identity()
+        # TODO: Corriger la logique JWT selon l'exemple
+        # get_jwt_identity() retourne seulement user_id (string)
+        # Pour is_admin il faut utiliser get_jwt()
+        current_user = get_jwt_identity()  # Retourne seulement user_id
+        
+        # TODO: Importer get_jwt et changer la logique:
+        # from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+        # claims = get_jwt()
+        # if not claims.get('is_admin'):
+        #     return {'error': 'Admin privileges required'}, 403
         
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403

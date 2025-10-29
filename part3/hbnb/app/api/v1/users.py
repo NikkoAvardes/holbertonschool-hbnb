@@ -1,8 +1,6 @@
 """User API endpoints for HBnB application."""
-
-from flask import request
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from app.services import facade
 
 api = Namespace('users', description='User operations')
@@ -28,6 +26,7 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """
         Register a new user.
@@ -35,6 +34,10 @@ class UserList(Resource):
         Creates a new user account with unique email validation.
         Returns the created user details with assigned ID.
         """
+        claims = get_jwt()
+        if not claims.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         user_data = api.payload
         try:
             existing_user = facade.get_user_by_email(user_data['email'])
@@ -104,6 +107,7 @@ class UserResource(Resource):
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, user_id):
         """
         Update a user by ID.
@@ -114,7 +118,17 @@ class UserResource(Resource):
         Returns:
             dict: Updated user details if successful, error message if failed
         """
+        claims = get_jwt()
+        if not claims.get('is_admin'):
+            return {'error': 'Admin privileges requires'}, 403
+
         user_data = api.payload
+
+        # Vérifier l'unicité de l'email si il est modifié
+        if 'email' in user_data:
+            existing_user = facade.get_user_by_email(user_data['email'])
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already in use'}, 400
         try:
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
