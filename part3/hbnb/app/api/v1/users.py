@@ -55,8 +55,8 @@ class UserList(Resource):
             new_user = facade.create_user(user_data)
             new_user.hash_password(password)
             return {
-                'id': new_user.id,
-				'message' : 'user successfully created'
+                'id': new_user.id, 
+                'message' : 'user successfully created'
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -152,7 +152,9 @@ class UserResource(Resource):
         except Exception:
             return {'error': 'Invalid input data'}, 400
 
+
 api = Namespace('users', description='User operations')
+
 
 @api.route('/')
 class AdminUserCreate(Resource):
@@ -160,7 +162,7 @@ class AdminUserCreate(Resource):
     def post(self):
         """Créer un nouvel utilisateur (admin uniquement)"""
         current_user = get_jwt_identity()
-        
+
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
@@ -181,7 +183,7 @@ class AdminUserModify(Resource):
     def put(self, user_id):
         """Modifier un utilisateur (admin uniquement)"""
         current_user = get_jwt_identity()
-        
+
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
@@ -204,7 +206,7 @@ class AdminUserResource(Resource):
     def put(self, user_id):
         """Modifier un utilisateur (admin uniquement)"""
         current_user = get_jwt_identity()
-        
+
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
