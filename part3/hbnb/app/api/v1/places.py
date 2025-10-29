@@ -2,7 +2,7 @@
 
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace('places', description='Place operations')
 
@@ -94,8 +94,7 @@ class PlaceList(Resource):
             {
                 'id': place.id,
                 'title': place.title,
-                'latitude': place.latitude,
-                'longitude': place.longitude
+                'price': place.price
             } for place in places
         ], 200
 
@@ -125,15 +124,9 @@ class PlaceResource(Resource):
             'id': place.id,
             'title': place.title,
             'description': place.description,
+            'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
-            'amenities': amenities_data
         }, 200
 
     @jwt_required()
@@ -144,7 +137,7 @@ class PlaceResource(Resource):
     @api.response(403, 'Unauthorized action')
     def put(self, place_id):
         """Update a place's information"""
-        current_user = get_jwt_identity()
+        current_user_id = get_jwt_identity()
         place_data = api.payload
 
         # Check if place exists and get its details
@@ -152,9 +145,10 @@ class PlaceResource(Resource):
         if not place:
             return {"error": "Place not found"}, 404
 
-        # ✅ TODO: allow admins to modify any place
-        is_admin = current_user.get('is_admin', False)
-        if not is_admin and place.owner_id != current_user.get('id'):
+        # Check if user is admin (from JWT claims) or place owner
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
         try:

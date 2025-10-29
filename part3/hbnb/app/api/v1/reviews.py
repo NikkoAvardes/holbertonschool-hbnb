@@ -1,6 +1,6 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
 api = Namespace('reviews', description='Review operations')
@@ -26,7 +26,7 @@ class ReviewList(Resource):
     @api.response(403, 'You cannot review your own place')
     def post(self):
         """Register a new review"""
-        current_user = get_jwt_identity()
+        current_user_id = get_jwt_identity()
 
         try:
             data = request.get_json()
@@ -38,18 +38,18 @@ class ReviewList(Resource):
                 return {"error": "Place not found"}, 404
 
             # Check if the user is trying to review their own place
-            if place.owner_id == current_user:
+            if place.owner_id == current_user_id:
                 return {"error": "You cannot review your own place"}, 400
 
             # Check if the user has already reviewed this place
             existing_reviews = facade.get_reviews_by_place(place_id)
             if existing_reviews[1] == 200:  # If successful response
                 for review in existing_reviews[0]:
-                    if review.get('user_id') == current_user:
+                    if review.get('user_id') == current_user_id:
                         return {"error": "You have already reviewed this place"}, 400
 
             # Set the user_id to the authenticated user
-            data['user_id'] = current_user
+            data['user_id'] = current_user_id
 
             result, status = facade.create_review(data)
             return result, status
@@ -82,7 +82,7 @@ class ReviewResource(Resource):
     @api.response(403, 'Unauthorized action')
     def put(self, review_id):
         """Update a review's information"""
-        current_user = get_jwt_identity()
+        current_user_id = get_jwt_identity()
 
         try:
             # Get the review first to check ownership
@@ -90,9 +90,10 @@ class ReviewResource(Resource):
             if review_status != 200:
                 return review_result, review_status
 
-            # ✅ TODO: allow admins to modify any review
-            is_admin = current_user.get('is_admin', False)
-            if not is_admin and review_result.get('user_id') != current_user.get('id'):
+            # Check if user is admin or owner of the review
+            claims = get_jwt()
+            is_admin = claims.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user_id:
                 return {'error': 'Unauthorized action'}, 403
 
             data = request.get_json()
@@ -109,7 +110,7 @@ class ReviewResource(Resource):
     @api.response(403, 'Unauthorized action')
     def delete(self, review_id):
         """Delete a review"""
-        current_user = get_jwt_identity()
+        current_user_id = get_jwt_identity()
 
         try:
             # Get the review first to check ownership
@@ -117,9 +118,10 @@ class ReviewResource(Resource):
             if review_status != 200:
                 return review_result, review_status
 
-            # ✅ TODO: allow admins to delete any review
-            is_admin = current_user.get('is_admin', False)
-            if not is_admin and review_result.get('user_id') != current_user.get('id'):
+            # Check if user is admin or owner of the review
+            claims = get_jwt()
+            is_admin = claims.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user_id:
                 return {'error': 'Unauthorized action'}, 403
 
             result, status = facade.delete_review(review_id)
