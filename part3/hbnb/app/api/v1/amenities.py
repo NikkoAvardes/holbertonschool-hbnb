@@ -2,7 +2,7 @@
 """Amenity API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 # Create namespace for amenity-related routes
@@ -23,6 +23,7 @@ amenity_model = api.model(
 class AmenityList(Resource):
     """Resource for amenity list operations (GET, POST)."""
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
@@ -33,6 +34,11 @@ class AmenityList(Resource):
         Creates a new amenity with the provided name. Names must be unique
         and cannot be empty.
         """
+        current_user = get_jwt_identity()
+        # TODO: Vérifier si l'utilisateur est admin
+        if not current_user.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+
         data = api.payload
         try:
             if not data or not data.get('name'):
@@ -81,12 +87,18 @@ class AmenityResource(Resource):
             return {"error": 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
+        current_user = get_jwt_identity()
+        # TODO: Vérifier si l'utilisateur est admin
+        if not current_user.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+
         data = api.payload
         if not data or not data.get('name'):
             return {"error": "Name is required"}, 400

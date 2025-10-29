@@ -90,8 +90,9 @@ class ReviewResource(Resource):
             if review_status != 200:
                 return review_result, review_status
 
-            # Check if the current user is the owner of the review
-            if review_result.get('user_id') != current_user:
+            # ✅ TODO: allow admins to modify any review
+            is_admin = current_user.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user.get('id'):
                 return {'error': 'Unauthorized action'}, 403
 
             data = request.get_json()
@@ -116,8 +117,9 @@ class ReviewResource(Resource):
             if review_status != 200:
                 return review_result, review_status
 
-            # Check if the current user is the owner of the review
-            if review_result.get('user_id') != current_user:
+            # ✅ TODO: allow admins to delete any review
+            is_admin = current_user.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user.get('id'):
                 return {'error': 'Unauthorized action'}, 403
 
             result, status = facade.delete_review(review_id)

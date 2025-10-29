@@ -33,7 +33,9 @@ class HBnBFacade:
         Returns:
             User: The created user object
         """
+        is_admin = user_data.pop('is_admin', False)  # <-- Ajouté pour la task
         user = User(**user_data)
+        user.is_admin = is_admin  # <-- stocke si l’utilisateur est admin
         self.user_repo.add(user)
         return user
 
@@ -86,8 +88,8 @@ class HBnBFacade:
 
         # Create place_data copy without owner_id and add owner object
         place_args = place_data.copy()
-        place_args.pop('owner_id', None)  # Remove owner_id
-        place_args['owner'] = owner  # Add owner object
+        place_args.pop('owner_id', None)
+        place_args['owner'] = owner
 
         place = Place(**place_args)
         self.place_repo.add(place)
@@ -101,33 +103,25 @@ class HBnBFacade:
         return self.get_place(place_id)
 
     def create_review(self, review_data):
-        """Créer un avis et l'ajouter à la place correspondante."""
         user_id = review_data.get("user_id")
         place_id = review_data.get("place_id")
         rating = review_data.get("rating")
         text = review_data.get("text")
 
-        # Vérifie que l'utilisateur et le lieu existent
         user = self.user_repo.get(user_id)
         place = self.place_repo.get(place_id)
         if not user or not place:
             return {"error": "Invalid user_id or place_id"}, 400
 
-        # Vérifie le rating
         if not isinstance(rating, int) or not (1 <= rating <= 5):
             return {"error": "Rating must be an integer between 1 and 5"}, 400
 
-        # Crée la review
         new_review = Review(text=text, rating=rating,
                             user_id=user_id, place_id=place_id)
 
-        # Ajoute la review au repository
         self.review_repo.add(new_review)
-
-        # Lie la review au lieu
         place.add_review(new_review)
 
-        # Retourne un dictionnaire prêt pour Flask
         return {
             "id": new_review.id,
             "user_id": new_review.user_id,
@@ -150,8 +144,6 @@ class HBnBFacade:
 
     def get_all_reviews(self):
         reviews = self.review_repo.get_all()
-        # Convert to dictionary format for JSON serialization
-        # (only id, text, rating for list)
         reviews_list = [
             {
                 'id': review.id,
@@ -182,11 +174,8 @@ class HBnBFacade:
         if not review:
             return {'error': 'Review not found'}, 404
 
-        # Validate rating if provided
         rating = review_data.get('rating')
-        if rating is not None and (not
-                                   isinstance(rating,
-                                              int) or not (1 <= rating <= 5)):
+        if rating is not None and (not isinstance(rating, int) or not (1 <= rating <= 5)):
             return {"error": "Rating must be an integer between 1 and 5"}, 400
 
         self.review_repo.update(review_id, review_data)
@@ -206,14 +195,11 @@ class HBnBFacade:
         return amenity
 
     def get_amenity(self, amenity_id):
-        # Logic to retrieve an amenity by ID
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        # Placeholder for logic to retrieve all amenities
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
-        # Placeholder for logic to update an amenity
         self.amenity_repo.update(amenity_id, amenity_data)
         return self.get_amenity(amenity_id)

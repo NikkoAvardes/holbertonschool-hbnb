@@ -152,8 +152,9 @@ class PlaceResource(Resource):
         if not place:
             return {"error": "Place not found"}, 404
 
-        # Check if the current user is the owner of the place
-        if place.owner_id != current_user:
+        # ✅ TODO: allow admins to modify any place
+        is_admin = current_user.get('is_admin', False)
+        if not is_admin and place.owner_id != current_user.get('id'):
             return {'error': 'Unauthorized action'}, 403
 
         try:

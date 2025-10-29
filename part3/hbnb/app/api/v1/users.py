@@ -27,41 +27,53 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required(optional=True)
     def post(self):
         """
         Register a new user.
 
-        Creates a new user account with unique email validation.
-        Returns the created user details with assigned ID.
+        - Normal users can register themselves (no token required)
+        - Admins can create any user (requires token with is_admin=True)
         """
         user_data = api.payload
         try:
+            # Vérifier si un utilisateur existe déjà avec cet email
             existing_user = facade.get_user_by_email(user_data['email'])
             if existing_user:
                 return {'error': 'Email already registered'}, 400
-            # Extract password and hash it before user creation
+
+            # Vérifier si un admin est connecté
+            current_user = get_jwt_identity()
+            if current_user and current_user.get('is_admin'):
+                # Admin = peut créer n'importe quel utilisateur
+                password = user_data.pop('password', None)
+                if not password:
+                    return {'error': 'Password is required'}, 400
+                new_user = facade.create_user(user_data)
+                new_user.hash_password(password)
+                return {'id': new_user.id, 'message': 'Admin created a new user'}, 201
+
+            # Sinon, création standard sans admin
             password = user_data.pop('password', None)
             if not password:
                 return {'error': 'Password is required'}, 400
-            # Create user object and hash password
+
             new_user = facade.create_user(user_data)
             new_user.hash_password(password)
             return {
                 'id': new_user.id,
-				'message' : 'user successfully created'
+                'message': 'User successfully created'
             }, 201
+
         except ValueError as e:
             return {'error': str(e)}, 400
-        except Exception:
+        except Exception as e:
             return {'error': 'Invalid input data'}, 400
+
 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
-        """
-        Get list of all users.
-
-        Returns a list of all registered users with their basic information.
-        """
+        """Get list of all users."""
         users = facade.get_all_users()
         return [
             {
@@ -80,15 +92,7 @@ class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """
-        Get user details by ID.
-
-        Args:
-            user_id (str): The unique identifier of the user
-
-        Returns:
-            dict: User details if found, error message if not found
-        """
+        """Get user details by ID."""
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -109,24 +113,37 @@ class UserResource(Resource):
         """
         Update a user by ID.
 
-        Args:
-            user_id (str): The unique identifier of the user to update
-
-        Returns:
-            dict: Updated user details if successful, error message if failed
+        - Normal users can update only their own data (except email/password)
+        - Admins can update any user (including email/password)
         """
         current_user = get_jwt_identity()
-
-        # Check if the user is trying to modify their own account
-        if current_user != user_id:
-            return {'error': 'Unauthorized action'}, 403
+        is_admin = current_user.get('is_admin', False)
 
         user_data = api.payload
 
-        # Prevent modification of email and password
-        if 'email' in user_data:
-            return {'error': 'You cannot modify email or password'}, 400
-        if 'password' in user_data:
+        # Si l'utilisateur n'est pas admin, vérifier qu'il modifie bien son propre compte
+        if not is_admin and current_user != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
+        # Si admin → peut modifier tout (email, password inclus)
+        if is_admin:
+            email = user_data.get('email')
+            if email:
+                existing_user = facade.get_user_by_email(email)
+                if existing_user and existing_user.id != user_id:
+                    return {'error': 'Email already in use'}, 400
+            try:
+                updated_user = facade.update_user(user_id, user_data)
+                if not updated_user:
+                    return {'error': 'User not found'}, 404
+                return updated_user.to_dict(), 200
+            except ValueError as e:
+                return {'error': str(e)}, 400
+            except Exception:
+                return {'error': 'Invalid input data'}, 400
+
+        # Si utilisateur normal → ne peut pas modifier email ni password
+        if 'email' in user_data or 'password' in user_data:
             return {'error': 'You cannot modify email or password'}, 400
 
         try:
@@ -143,50 +160,3 @@ class UserResource(Resource):
             return {'error': str(e)}, 400
         except Exception:
             return {'error': 'Invalid input data'}, 400
-
-api = Namespace('users', description='User operations')
-
-@api.route('/')
-class AdminUserCreate(Resource):
-    @jwt_required()
-    def post(self):
-        """Créer un nouvel utilisateur (admin uniquement)"""
-        current_user = get_jwt_identity()
-        
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
-        user_data = request.json
-        email = user_data.get('email')
-
-        if facade.get_user_by_email(email):
-            return {'error': 'Email already registered'}, 400
-
-        # TODO: Créer le nouvel utilisateur avec les données reçues
-        # Exemple : new_user = facade.create_user(user_data)
-        # return new_user.to_dict(), 201
-        pass
-
-
-@api.route('/<user_id>')
-class AdminUserModify(Resource):
-    @jwt_required()
-    def put(self, user_id):
-        """Modifier un utilisateur (admin uniquement)"""
-        current_user = get_jwt_identity()
-        
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
-        data = request.json
-        email = data.get('email')
-
-        if email:
-            existing_user = facade.get_user_by_email(email)
-            if existing_user and existing_user.id != user_id:
-                return {'error': 'Email already in use'}, 400
-
-        # TODO: Mettre à jour l’utilisateur
-        # Exemple : updated_user = facade.update_user(user_id, data)
-        # return updated_user.to_dict(), 200
-        pass
