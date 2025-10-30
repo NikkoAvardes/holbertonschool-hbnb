@@ -2,12 +2,11 @@
 """Amenity API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 from flask import request
 from flask_restx import Namespace, Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-
+from app.services import facade
 
 # Create namespace for amenity-related routes
 api = Namespace('amenities', description='Amenity operations')
@@ -26,7 +25,7 @@ amenity_model = api.model(
 @api.route('/')
 class AmenityList(Resource):
     """Resource for amenity list operations (GET, POST)."""
-    @jwt_required()
+
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
@@ -37,10 +36,6 @@ class AmenityList(Resource):
         Creates a new amenity with the provided name. Names must be unique
         and cannot be empty.
         """
-        claims = get_jwt()
-        if not claims.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
         data = api.payload
         try:
             if not data or not data.get('name'):
@@ -89,6 +84,7 @@ class AmenityResource(Resource):
             return {"error": 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
@@ -96,10 +92,6 @@ class AmenityResource(Resource):
     @jwt_required()
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
-        claims = get_jwt()  # objet avec claims supplémentaires
-        if not claims.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
         data = api.payload
         if not data or not data.get('name'):
             return {"error": "Name is required"}, 400
@@ -114,7 +106,6 @@ class AmenityResource(Resource):
             return {"error": "Data is invalid"}, 400
         return {"message": "Amenity updated successfully"}, 200
 
-
 api = Namespace('amenities', description='Amenities operations')
 
 
@@ -124,7 +115,7 @@ class AdminAmenityCreate(Resource):
     def post(self):
         """Créer un nouvel amenity (admin uniquement)"""
         current_user = get_jwt_identity()
-
+        
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
@@ -138,18 +129,18 @@ class AdminAmenityCreate(Resource):
         new_amenity = facade.create_amenity(amenity_data)
         return new_amenity.to_dict(), 201
 
-
 @api.route('/<amenity_id>')
 class AdminAmenityModify(Resource):
     @jwt_required()
     def put(self, amenity_id):
         """Modifier un amenity (admin uniquement)"""
         current_user = get_jwt_identity()
-
+        
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
         data = request.json
+
 
         updated_amenity = facade.update_amenity(amenity_id, data)
         return updated_amenity.to_dict(), 200

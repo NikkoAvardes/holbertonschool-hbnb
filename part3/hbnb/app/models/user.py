@@ -58,8 +58,9 @@ class User(BaseModel):
         self.last_name = last_name.strip()
         self.email = email.strip().lower()
         self.is_admin = is_admin
-        self.password = password
+        self.password = None
 
+        # Hash automatique du password dans le constructeur
         if password:
             self.hash_password(password)
 

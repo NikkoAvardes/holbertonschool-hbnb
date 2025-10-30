@@ -18,13 +18,39 @@ review_model = api.model('Review', {
 
 @api.route('/')
 class ReviewList(Resource):
+    @jwt_required()
     @api.expect(review_model)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Unauthorized')
+    @api.response(403, 'You cannot review your own place')
     def post(self):
         """Register a new review"""
+        current_user_id = get_jwt_identity()
+
         try:
             data = request.get_json()
+            place_id = data.get('place_id')
+
+            # Check if the place exists
+            place = facade.get_place(place_id)
+            if not place:
+                return {"error": "Place not found"}, 404
+
+            # Check if the user is trying to review their own place
+            if place.owner_id == current_user_id:
+                return {"error": "You cannot review your own place"}, 400
+
+            # Check if the user has already reviewed this place
+            existing_reviews = facade.get_reviews_by_place(place_id)
+            if existing_reviews[1] == 200:  # If successful response
+                for review in existing_reviews[0]:
+                    if review.get('user_id') == current_user_id:
+                        return {"error": "You have already reviewed this place"}, 400
+
+            # Set the user_id to the authenticated user
+            data['user_id'] = current_user_id
+
             result, status = facade.create_review(data)
             return result, status
         except ValueError as e:
@@ -48,23 +74,28 @@ class ReviewResource(Resource):
         result, status = facade.get_review(review_id)
         return result, status
 
+    @jwt_required()
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
-    @jwt_required()
+    @api.response(403, 'Unauthorized action')
     def put(self, review_id):
         """Update a review's information"""
-        user_id = get_jwt_identity()
-        claims = get_jwt()
-        is_admin = claims.get('is_admin', False)
-        review_result, review_status = facade.get_review(review_id)
-        if review_status != 200:
-            return {"error": "Review not found"}, 404
-        if not is_admin and review_result.get('user_id') != user_id:
-            return {'error': 'Unauthorized action'}, 403
+        current_user_id = get_jwt_identity()
 
         try:
+            # Get the review first to check ownership
+            review_result, review_status = facade.get_review(review_id)
+            if review_status != 200:
+                return review_result, review_status
+
+            # Check if user is admin or owner of the review
+            claims = get_jwt()
+            is_admin = claims.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user_id:
+                return {'error': 'Unauthorized action'}, 403
+
             data = request.get_json()
             result, status = facade.update_review(review_id, data)
             return result, status
@@ -72,21 +103,28 @@ class ReviewResource(Resource):
             return {"error": str(e)}, 400
         except Exception:
             return {"error": "Invalid input data"}, 400
-        return result, status
 
+    @jwt_required()
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
-    @jwt_required()
+    @api.response(403, 'Unauthorized action')
     def delete(self, review_id):
         """Delete a review"""
-        user_id = get_jwt_identity()
-        claims = get_jwt()
-        is_admin = claims.get('is_admin', False)
-        review_result, review_status = facade.get_review(review_id)
-        if review_status != 200:
-            return {"error": "Review not found"}, 404
-        if not is_admin and review_result.get('user_id') != user_id:
-            return {'error': 'Unauthorized action'}, 403
+        current_user_id = get_jwt_identity()
 
-        result, status = facade.delete_review(review_id)
-        return result, status
+        try:
+            # Get the review first to check ownership
+            review_result, review_status = facade.get_review(review_id)
+            if review_status != 200:
+                return review_result, review_status
+
+            # Check if user is admin or owner of the review
+            claims = get_jwt()
+            is_admin = claims.get('is_admin', False)
+            if not is_admin and review_result.get('user_id') != current_user_id:
+                return {'error': 'Unauthorized action'}, 403
+
+            result, status = facade.delete_review(review_id)
+            return result, status
+        except Exception as e:
+            return {"error": "Invalid input data"}, 400

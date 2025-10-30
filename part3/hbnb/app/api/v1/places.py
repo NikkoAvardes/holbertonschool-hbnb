@@ -1,8 +1,6 @@
 """Place API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from flask import request
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
@@ -96,8 +94,7 @@ class PlaceList(Resource):
             {
                 'id': place.id,
                 'title': place.title,
-                'latitude': place.latitude,
-                'longitude': place.longitude
+                'price': place.price
             } for place in places
         ], 200
 
@@ -127,15 +124,9 @@ class PlaceResource(Resource):
             'id': place.id,
             'title': place.title,
             'description': place.description,
+            'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
-            'amenities': amenities_data
         }, 200
 
     @jwt_required()
@@ -147,18 +138,7 @@ class PlaceResource(Resource):
     @api.response(403, 'Unauthorized action')
     def put(self, place_id):
         """Update a place's information"""
-        user_id = get_jwt_identity()
-        claims = get_jwt()
-        is_admin = claims.get('is_admin', False)
-
-        place = facade.get_place(place_id)
-        if not place:
-            return {'error': "Place not found"}, 404
-
-        if not is_admin and place.owner_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
-
-        current_user = get_jwt_identity()
+        current_user_id = get_jwt_identity()
         place_data = api.payload
 
         # Check if place exists and get its details
@@ -166,8 +146,10 @@ class PlaceResource(Resource):
         if not place:
             return {"error": "Place not found"}, 404
 
-        # Check if the current user is the owner of the place
-        if place.owner_id != current_user:
+        # Check if user is admin (from JWT claims) or place owner
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
         try:
@@ -189,31 +171,3 @@ class PlaceReviewList(Resource):
         """Get all reviews for a specific place"""
         result, status = facade.get_reviews_by_place(place_id)
         return result, status
-
-
-@api.route('/<place_id>')
-class AdminPlaceModify(Resource):
-    @jwt_required()
-    def put(self, place_id):
-        """Permet aux admins de modifier un place
-        sans restriction de propriété"""
-        current_user = get_jwt_identity()
-
-        # Si le token ne contient pas la clé is_admin,
-        # on considère False par défaut
-        is_admin = current_user.get('is_admin', False)
-        user_id = current_user.get('id')
-
-        # Récupération du place depuis la façade
-        place = facade.get_place(place_id)
-        if not place:
-            return {'error': 'Place not found'}, 404
-
-        # Si l'utilisateur n'est pas admin ET n'est pas propriétaire → refus
-        if not is_admin and place.owner_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
-
-        # TODO: Mettre ici la logique pour mettre à jour le place
-        data = request.json
-        updated_place = facade.update_place(place_id, data)
-        return updated_place.to_dict(), 200
