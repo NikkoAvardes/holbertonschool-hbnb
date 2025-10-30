@@ -2,6 +2,7 @@
 """Review model module."""
 
 from .base_model import BaseModel
+from app import db
 
 
 class Review(BaseModel):
@@ -11,6 +12,18 @@ class Review(BaseModel):
     A review contains text content and a rating from 1-5 stars,
     and must be associated with both a user and a place.
     """
+    __tablename__ = 'reviews'
+
+
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id'), nullable=False)
 
     def __init__(
             self, text, rating, user=None, place=None,

@@ -3,6 +3,7 @@
 
 import uuid
 from datetime import datetime
+from app import db
 
 
 class BaseModel:
@@ -14,6 +15,11 @@ class BaseModel:
     - Creation and update timestamps
     - Basic update operations
     """
+    __abstract__ = True  # Ne crée pas de table propre pour BaseModel
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self):
         """Initialize a new BaseModel instance with
