@@ -2,9 +2,6 @@
 """Amenity API endpoints for HBnB application."""
 
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
-from flask import request
-from flask_restx import Namespace, Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
@@ -26,6 +23,7 @@ amenity_model = api.model(
 class AmenityList(Resource):
     """Resource for amenity list operations (GET, POST)."""
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
@@ -36,6 +34,14 @@ class AmenityList(Resource):
         Creates a new amenity with the provided name. Names must be unique
         and cannot be empty.
         """
+        current_user_id = get_jwt_identity()
+        # Check if user is admin (from JWT claims)
+        from flask_jwt_extended import get_jwt
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        if not is_admin:
+            return {'error': 'Admin privileges required'}, 403
+
         data = api.payload
         try:
             if not data or not data.get('name'):
@@ -92,6 +98,13 @@ class AmenityResource(Resource):
     @jwt_required()
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
+        current_user_id = get_jwt_identity()
+        # Check if user is admin (from JWT claims)
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        if not is_admin:
+            return {'error': 'Admin privileges required'}, 403
+
         data = api.payload
         if not data or not data.get('name'):
             return {"error": "Name is required"}, 400

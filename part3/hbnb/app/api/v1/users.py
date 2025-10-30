@@ -50,10 +50,6 @@ class UserList(Resource):
         - Normal users can register themselves (no token required)
         - Admins can create any user (requires token with is_admin=True)
         """
-        claims = get_jwt()
-        if not claims.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-
         user_data = api.payload
         try:
             # Vérifier si un utilisateur existe déjà avec cet email
