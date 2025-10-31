@@ -1,6 +1,7 @@
 """Facade module for business logic operations."""
 
 from app.persistence.repository import SQLAlchemyRepository
+from app.services.repositories.user_repository import UserRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.review import Review
@@ -17,7 +18,7 @@ class HBnBFacade:
 
     def __init__(self):
         """Initialize repositories for all entities."""
-        self.user_repo = SQLAlchemyRepository(User)
+        self.user_repo = UserRepository(User)
         self.place_repo = SQLAlchemyRepository(Place)
         self.review_repo = SQLAlchemyRepository(Review)
         self.amenity_repo = SQLAlchemyRepository(Amenity)
@@ -33,9 +34,7 @@ class HBnBFacade:
         Returns:
             User: The created user object
         """
-        is_admin = user_data.pop('is_admin', False)  # <-- Ajouté pour la task
         user = User(**user_data)
-        user.is_admin = is_admin  # <-- stocke si l’utilisateur est admin
         self.user_repo.add(user)
         return user
 
