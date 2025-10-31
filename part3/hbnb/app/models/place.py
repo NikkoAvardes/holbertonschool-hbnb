@@ -26,7 +26,7 @@ class Place(BaseModel):
     __tablename__ = 'places'
 
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
+    description = db.Column(db.String(1000))
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
@@ -84,13 +84,21 @@ class Place(BaseModel):
         self.price = float(price)
         self.latitude = float(latitude)
         self.longitude = float(longitude)
-        self.owner_id = owner_id
+        self.owner_id = owner.id
 
     @validates('title')
     def validate_title(self, key, title):
         if not title or not title.strip():
             raise ValueError("Title cannot be empty")
+        if len(title.strip()) > 100:
+            raise ValueError("Title must not exceed 100 characters")
         return title.strip()
+
+    @validates('description')
+    def validate_description(self, key, description):
+        if description and len(description.strip()) > 1000:
+            raise ValueError("Description must not exceed 1000 characters")
+        return description.strip() if description else ""
 
     @validates('price')
     def validate_price(self, key, price):
@@ -111,7 +119,6 @@ class Place(BaseModel):
                 longitude < -180 or longitude > 180):
             raise ValueError("Longitude must be between -180 and 180")
         return float(longitude)
-        self.owner_id = owner.id
 
     def add_review(self, review):
         """

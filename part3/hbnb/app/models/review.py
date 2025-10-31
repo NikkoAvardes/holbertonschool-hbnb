@@ -3,6 +3,7 @@
 
 from .base_model import BaseModel
 from app import db
+from sqlalchemy.orm import validates
 
 
 class Review(BaseModel):
@@ -60,3 +61,33 @@ class Review(BaseModel):
 
         self.text = text.strip()
         self.rating = rating
+
+    @validates('text')
+    def validate_text(self, key, text):
+        """Validate the text attribute."""
+        if not text or not text.strip():
+            raise ValueError("Text cannot be empty")
+        if len(text.strip()) > 255:
+            raise ValueError("Text must not exceed 255 characters")
+        return text.strip()
+
+    @validates('rating')
+    def validate_rating(self, key, rating):
+        """Validate the rating attribute."""
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            raise ValueError("Rating must be an integer between 1 and 5")
+        return rating
+
+    @validates('user_id')
+    def validate_user_id(self, key, user_id):
+        """Validate the user_id attribute."""
+        if not user_id or not user_id.strip():
+            raise ValueError("User ID cannot be empty")
+        return user_id
+
+    @validates('place_id')
+    def validate_place_id(self, key, place_id):
+        """Validate the place_id attribute."""
+        if not place_id or not place_id.strip():
+            raise ValueError("Place ID cannot be empty")
+        return place_id

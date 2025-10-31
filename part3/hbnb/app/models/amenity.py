@@ -2,10 +2,11 @@
 """Amenity model module."""
 
 from .base_model import BaseModel
-from app import db  # Import de l'instance SQLAlchemy
+from app import db
+from sqlalchemy.orm import validates
 
 
-class Amenity(BaseModel, db.Model):
+class Amenity(BaseModel):
     """
     Represents an amenity that can be associated with places.
 
@@ -27,8 +28,6 @@ class Amenity(BaseModel, db.Model):
         Raises:
             ValueError: If name is empty or exceeds character limit
         """
-
-
         if not name or not name.strip():
             raise ValueError("Name cannot be empty")
         if len(name.strip()) > 50:
@@ -36,6 +35,15 @@ class Amenity(BaseModel, db.Model):
 
         super().__init__()  # Initialise les attributs hérités de BaseModel
         self.name = name.strip()
+
+    @validates('name')
+    def validate_name(self, key, value):
+        """Validate the name attribute."""
+        if not value or not value.strip():
+            raise ValueError("Name cannot be empty")
+        if len(value.strip()) > 50:
+            raise ValueError("Name must not exceed 50 characters")
+        return value.strip()
 
     def to_dict(self):
         """

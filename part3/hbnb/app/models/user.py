@@ -5,6 +5,7 @@ import re
 from .base_model import BaseModel
 import flask_bcrypt as bcrypt
 from app import db
+from sqlalchemy.orm import validates
 
 
 class User(BaseModel):
@@ -18,16 +19,11 @@ class User(BaseModel):
 
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-		places = db.relationship('Place', backref='user', lazy=True)
-
-    reviews = db.relationship('Review', backref='user', lazy=True)
-
 
     places = db.relationship('Place', backref='user', lazy=True)
-
     reviews = db.relationship('Review', backref='user', lazy=True)
 
 
@@ -74,7 +70,6 @@ class User(BaseModel):
         self.last_name = last_name.strip()
         self.email = email.strip().lower()
         self.is_admin = is_admin
-        self.password = None
 
         # Hash automatique du password dans le constructeur
         if password:
@@ -89,3 +84,41 @@ class User(BaseModel):
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
+
+    @validates('first_name')
+    def validate_first_name(self, key, first_name):
+        """Validate the first_name attribute."""
+        if not first_name or not first_name.strip():
+            raise ValueError("First name cannot be empty")
+        if len(first_name.strip()) > 50:
+            raise ValueError("First name must not exceed 50 characters")
+        return first_name.strip()
+
+    @validates('last_name')
+    def validate_last_name(self, key, last_name):
+        """Validate the last_name attribute."""
+        if not last_name or not last_name.strip():
+            raise ValueError("Last name cannot be empty")
+        if len(last_name.strip()) > 50:
+            raise ValueError("Last name must not exceed 50 characters")
+        return last_name.strip()
+
+    @validates('email')
+    def validate_email(self, key, email):
+        """Validate the email attribute."""
+        if not email or not email.strip():
+            raise ValueError("Email cannot be empty")
+        
+        # Vérifie le format de l'email
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email.strip()):
+            raise ValueError("Invalid email format")
+        
+        return email.strip().lower()
+
+    @validates('password')
+    def validate_password(self, key, password):
+        """Validate the password attribute."""
+        if password and len(password) < 6:
+            raise ValueError("Password must be at least 6 characters long")
+        return password

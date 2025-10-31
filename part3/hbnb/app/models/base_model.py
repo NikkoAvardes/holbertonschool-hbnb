@@ -5,8 +5,6 @@ import uuid
 from datetime import datetime
 from app import db
 
-
-class BaseModel(db.Model):
 class BaseModel(db.Model):
     """
     Base class for all entities in the project.
