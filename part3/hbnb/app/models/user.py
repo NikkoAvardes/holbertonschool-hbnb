@@ -3,8 +3,7 @@
 
 import re
 from .base_model import BaseModel
-from flask_bcrypt import generate_password_hash
-from flask_bcrypt import check_password_hash
+import flask_bcrypt as bcrypt
 from app import db
 
 
@@ -17,8 +16,6 @@ class User(BaseModel):
 """
     __tablename__ = 'users'
 
-
-    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -83,9 +80,9 @@ class User(BaseModel):
     # sert à enregistrer un mot de passe de façon sécurisée
     def hash_password(self, password):
         """Hashes the password before storing it."""
-        self.password = generate_password_hash(password).decode('utf-8')
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     # permet de vérifier un mot de passe lors de la connexion
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
-        return check_password_hash(self.password, password)
+        return bcrypt.check_password_hash(self.password, password)

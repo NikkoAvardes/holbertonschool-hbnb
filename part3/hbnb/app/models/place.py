@@ -6,8 +6,8 @@ from app import db
 
 place_amenity = db.Table(
     'place_amenity',
-    db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
-    db.Column('amenity_id', db.Integer, db.ForeignKey('amenities.id'), primary_key=True)
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
 )
 
 class Place(BaseModel):
@@ -17,6 +17,21 @@ class Place(BaseModel):
     A place belongs to an owner (User) and can have multiple reviews
     and amenities associated with it.
     """
+    __tablename__ = 'places'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    
+    # Foreign key to User
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    
+    # Relationships
+    reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                               backref=db.backref('places', lazy=True))
 
     def __init__(self, title, description, price, latitude, longitude, owner):
         """
@@ -62,10 +77,7 @@ class Place(BaseModel):
         self.price = float(price)
         self.latitude = float(latitude)
         self.longitude = float(longitude)
-        self.owner = owner
         self.owner_id = owner.id
-        self.reviews = []
-        self.amenities = []
 
     def add_review(self, review):
         """
