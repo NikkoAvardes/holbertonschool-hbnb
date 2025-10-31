@@ -15,11 +15,6 @@ place_amenity = db.Table('place_amenity',
                                    primary_key=True)
                          )
 
-place_amenity = db.Table(
-    'place_amenity',
-    db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
-    db.Column('amenity_id', db.Integer, db.ForeignKey('amenities.id'), primary_key=True)
-)
 
 class Place(BaseModel):
     """
@@ -43,6 +38,7 @@ class Place(BaseModel):
     reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
     amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
                                backref=db.backref('places', lazy=True))
+
 
     def __init__(self, title, description, price, latitude, longitude, owner):
         """
@@ -88,6 +84,33 @@ class Place(BaseModel):
         self.price = float(price)
         self.latitude = float(latitude)
         self.longitude = float(longitude)
+        self.owner_id = owner_id
+
+    @validates('title')
+    def validate_title(self, key, title):
+        if not title or not title.strip():
+            raise ValueError("Title cannot be empty")
+        return title.strip()
+
+    @validates('price')
+    def validate_price(self, key, price):
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Price must be a positive number")
+        return float(price)
+
+    @validates('latitude')
+    def validate_latitude(self, key, latitude):
+        if (not isinstance(latitude, (int, float)) or
+                latitude < -90 or latitude > 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        return float(latitude)
+
+    @validates('longitude')
+    def validate_longitude(self, key, longitude):
+        if (not isinstance(longitude, (int, float)) or
+                longitude < -180 or longitude > 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        return float(longitude)
         self.owner_id = owner.id
 
     def add_review(self, review):
