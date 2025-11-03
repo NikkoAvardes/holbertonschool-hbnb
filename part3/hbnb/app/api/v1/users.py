@@ -65,7 +65,10 @@ class UserList(Resource):
                 if is_admin:
                     # Admin = peut créer n'importe quel utilisateur
                     new_user = facade.create_user(user_data)
-                    return {'id': new_user.id, 'message': 'Admin created a new user'}, 201
+                    return {
+                        'id': new_user.id,
+                        'message': 'Admin created a new user'
+                    }, 201
 
             # Sinon, création standard sans admin
             new_user = facade.create_user(user_data)
@@ -78,7 +81,6 @@ class UserList(Resource):
             return {'error': str(e)}, 400
         except Exception as e:
             return {'error': 'Invalid input data'}, 400
-
 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
@@ -131,9 +133,12 @@ class UserResource(Resource):
 
         user_data = api.payload
 
-        # Si l'utilisateur n'est pas admin, vérifier qu'il modifie bien son propre compte
+        # Si l'utilisateur n'est pas admin,
+        # vérifier qu'il modifie bien son propre compte
         if not is_admin and current_user_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
+            return {
+                'error': 'Unauthorized action'
+            }, 403
 
         # Si admin → peut modifier tout (email, password inclus)
         if is_admin:

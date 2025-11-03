@@ -46,7 +46,9 @@ class ReviewList(Resource):
             if existing_reviews[1] == 200:  # If successful response
                 for review in existing_reviews[0]:
                     if review.get('user_id') == current_user_id:
-                        return {"error": "You have already reviewed this place"}, 400
+                        return {
+                            "error": "You have already reviewed this place"
+                        }, 400
 
             # Set the user_id to the authenticated user
             data['user_id'] = current_user_id
@@ -93,7 +95,10 @@ class ReviewResource(Resource):
             # Check if user is admin or owner of the review
             claims = get_jwt()
             is_admin = claims.get('is_admin', False)
-            if not is_admin and review_result.get('user_id') != current_user_id:
+            if (
+                not is_admin and
+                review_result.get('user_id') != current_user_id
+            ):
                 return {'error': 'Unauthorized action'}, 403
 
             data = request.get_json()
@@ -121,7 +126,10 @@ class ReviewResource(Resource):
             # Check if user is admin or owner of the review
             claims = get_jwt()
             is_admin = claims.get('is_admin', False)
-            if not is_admin and review_result.get('user_id') != current_user_id:
+            if (
+                not is_admin and
+                review_result.get('user_id') != current_user_id
+            ):
                 return {'error': 'Unauthorized action'}, 403
 
             result, status = facade.delete_review(review_id)

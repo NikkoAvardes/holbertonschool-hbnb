@@ -7,3 +7,4 @@ env/
 venv/
 .vscode/
 part3/hbnb/tests/HBNB_API.postman_collection.json
+instance/

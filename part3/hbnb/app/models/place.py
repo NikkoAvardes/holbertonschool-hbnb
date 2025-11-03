@@ -26,19 +26,31 @@ class Place(BaseModel):
     __tablename__ = 'places'
 
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(1000))
+    description = db.Column(db.Text)
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    
-    # Foreign key to User
-    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
-    
-    # Relationships
-    reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
-    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
-                               backref=db.backref('places', lazy=True))
 
+    # Foreign key to User
+    owner_id = db.Column(
+        db.String(36),
+        db.ForeignKey('users.id'),
+        nullable=False
+    )
+
+    # Relationships
+    reviews = db.relationship(
+        'Review',
+        backref='place',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
+    amenities = db.relationship(
+        'Amenity',
+        secondary=place_amenity,
+        lazy='subquery',
+        backref=db.backref('places', lazy=True)
+    )
 
     def __init__(self, title, description, price, latitude, longitude, owner):
         """
@@ -93,12 +105,6 @@ class Place(BaseModel):
         if len(title.strip()) > 100:
             raise ValueError("Title must not exceed 100 characters")
         return title.strip()
-
-    @validates('description')
-    def validate_description(self, key, description):
-        if description and len(description.strip()) > 1000:
-            raise ValueError("Description must not exceed 1000 characters")
-        return description.strip() if description else ""
 
     @validates('price')
     def validate_price(self, key, price):

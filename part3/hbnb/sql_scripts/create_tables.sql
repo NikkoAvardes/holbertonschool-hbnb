@@ -1,4 +1,5 @@
-"""creates all tables for the application"""
+-- Script SQL pour créer toutes les tables nécessaires à l'application HBnB
+-- Ce fichier définit la structure de la base de données (utilisateurs, lieux, avis, commodités, relations).
 
 
 """User Table"""

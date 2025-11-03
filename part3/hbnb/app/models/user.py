@@ -26,7 +26,6 @@ class User(BaseModel):
     places = db.relationship('Place', backref='user', lazy=True)
     reviews = db.relationship('Review', backref='user', lazy=True)
 
-
     def __init__(self, first_name, last_name, email,
                  password=None, is_admin=False):
         """
@@ -108,17 +107,10 @@ class User(BaseModel):
         """Validate the email attribute."""
         if not email or not email.strip():
             raise ValueError("Email cannot be empty")
-        
+
         # Vérifie le format de l'email
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         if not re.match(email_regex, email.strip()):
             raise ValueError("Invalid email format")
-        
-        return email.strip().lower()
 
-    @validates('password')
-    def validate_password(self, key, password):
-        """Validate the password attribute."""
-        if password and len(password) < 6:
-            raise ValueError("Password must be at least 6 characters long")
-        return password
+        return email.strip().lower()

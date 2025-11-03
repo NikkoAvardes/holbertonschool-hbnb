@@ -1,4 +1,6 @@
-"""Inserts initial data into the database"""
+-- Script SQL pour insérer les données initiales dans la base HBnB
+-- Ce fichier ajoute l'utilisateur admin et les commodités de départ.
+
 INSERT INTO users (id, email, first_name, last_name, password, is_admin)
 VALUE ("36c9050e-ddd3-4c3b-9731-9f487208bbc1", "admin@hbnb.io", "Admin", "HBnB", "$2b$12$2GYovIRj3KCi2hjvRh0Gcu9o.f19B0Rr8lZo0AJHBbKWc0sjGc7Yi", true);
 

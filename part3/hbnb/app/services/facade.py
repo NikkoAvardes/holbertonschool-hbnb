@@ -174,8 +174,13 @@ class HBnBFacade:
             return {'error': 'Review not found'}, 404
 
         rating = review_data.get('rating')
-        if rating is not None and (not isinstance(rating, int) or not (1 <= rating <= 5)):
-            return {"error": "Rating must be an integer between 1 and 5"}, 400
+        if (
+            rating is not None and
+            (not isinstance(rating, int) or not (1 <= rating <= 5))
+        ):
+            return {
+                "error": "Rating must be an integer between 1 and 5"
+            }, 400
 
         self.review_repo.update(review_id, review_data)
         return {'message': 'Review updated successfully'}, 200
