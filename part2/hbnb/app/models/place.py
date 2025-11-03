@@ -1,50 +1,80 @@
 #!/usr/bin/python3
-# Importe la classe de base commune
+"""Place model module."""
+
 from app.models.base_model import BaseModel
 
 
-# Classe Place : représente un logement ou une location
 class Place(BaseModel):
+    """
+    Represents a place/accommodation that can be booked.
+
+    A place belongs to an owner (User) and can have multiple reviews
+    and amenities associated with it.
+    """
+
     def __init__(self, title, description, price, latitude, longitude, owner):
-        # Initialise le lieu avec ses attributs principaux
+        """
+        Initialize a new Place instance.
+
+        Args:
+            title (str): Place title (cannot be empty)
+            description (str): Place description (optional)
+            price (float): Price per night (must be positive)
+            latitude (float): Geographic latitude (-90 to 90)
+            longitude (float): Geographic longitude (-180 to 180)
+            owner (User): The user who owns this place
+
+        Raises:
+            ValueError: If any validation fails
+        """
         super().__init__()
-        
+
         # Validation des champs requis
         if not title or not title.strip():
             raise ValueError("Title cannot be empty")
-        
+
         # Validation du prix
         if not isinstance(price, (int, float)) or price <= 0:
             raise ValueError("Price must be a positive number")
-            
+
         # Validation de la latitude
-        if not isinstance(latitude, (int, float)) or latitude < -90 or latitude > 90:
+        if (not isinstance(latitude, (int, float)) or
+                latitude < -90 or latitude > 90):
             raise ValueError("Latitude must be between -90 and 90")
-            
-        # Validation de la longitude  
-        if not isinstance(longitude, (int, float)) or longitude < -180 or longitude > 180:
+
+        # Validation de la longitude
+        if (not isinstance(longitude, (int, float)) or
+                longitude < -180 or longitude > 180):
             raise ValueError("Longitude must be between -180 and 180")
-            
+
         # Validation du propriétaire
         if not owner:
             raise ValueError("Owner is required")
-        
+
         self.title = title.strip()
         self.description = description.strip() if description else ""
         self.price = float(price)
         self.latitude = float(latitude)
         self.longitude = float(longitude)
         self.owner = owner
-        self.owner_id = owner.id  # Store owner ID for easy access
-        # Liste des avis associés au lieu
+        self.owner_id = owner.id
         self.reviews = []
-        # Liste des commodités associées au lieu
         self.amenities = []
 
     def add_review(self, review):
-        # Ajoute un avis au lieu
+        """
+        Add a review to this place.
+
+        Args:
+            review (Review): The review to add
+        """
         self.reviews.append(review)
 
     def add_amenity(self, amenity):
-        # Ajoute une commodité au lieu
+        """
+        Add an amenity to this place.
+
+        Args:
+            amenity (Amenity): The amenity to add
+        """
         self.amenities.append(amenity)

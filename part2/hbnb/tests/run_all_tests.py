@@ -8,20 +8,20 @@ import unittest
 import sys
 import os
 
-# Add the parent directory to the path so we can import the app
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 # Import all test modules
 from tests.test_user_endpoints import TestUserEndpoints
 from tests.test_amenity_endpoints import TestAmenityEndpoints
 from tests.test_place_endpoints import TestPlaceEndpoints
 from tests.test_review_endpoints import TestReviewEndpoints
 
+# Add the parent directory to the path so we can import the app
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 def create_test_suite():
     """Create a test suite with all test cases."""
     test_suite = unittest.TestSuite()
-    
+
     # Add all test classes
     test_classes = [
         TestUserEndpoints,
@@ -29,11 +29,11 @@ def create_test_suite():
         TestPlaceEndpoints,
         TestReviewEndpoints
     ]
-    
+
     for test_class in test_classes:
         tests = unittest.TestLoader().loadTestsFromTestCase(test_class)
         test_suite.addTests(tests)
-    
+
     return test_suite
 
 

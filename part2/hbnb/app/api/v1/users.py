@@ -1,3 +1,5 @@
+"""User API endpoints for HBnB application."""
+
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -17,12 +19,18 @@ user_model = api.model(
 @api.route('/')
 class UserList(Resource):
     """Resource for user list operations (GET, POST)."""
+
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
     def post(self):
-        """Register a new user."""
+        """
+        Register a new user.
+
+        Creates a new user account with unique email validation.
+        Returns the created user details with assigned ID.
+        """
         user_data = api.payload
         try:
             existing_user = facade.get_user_by_email(user_data['email'])
@@ -40,8 +48,13 @@ class UserList(Resource):
         except Exception:
             return {'error': 'Invalid input data'}, 400
 
+    @api.response(200, 'List of users retrieved successfully')
     def get(self):
-        """Get list of all users."""
+        """
+        Get list of all users.
+
+        Returns a list of all registered users with their basic information.
+        """
         users = facade.get_all_users()
         return [
             {
@@ -56,10 +69,19 @@ class UserList(Resource):
 @api.route('/<user_id>')
 class UserResource(Resource):
     """Resource for individual user operations (GET, PUT)."""
+
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """Get user details by ID."""
+        """
+        Get user details by ID.
+
+        Args:
+            user_id (str): The unique identifier of the user
+
+        Returns:
+            dict: User details if found, error message if not found
+        """
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -75,7 +97,15 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
     def put(self, user_id):
-        """Update a user by ID."""
+        """
+        Update a user by ID.
+
+        Args:
+            user_id (str): The unique identifier of the user to update
+
+        Returns:
+            dict: Updated user details if successful, error message if failed
+        """
         user_data = api.payload
         try:
             updated_user = facade.update_user(user_id, user_data)
