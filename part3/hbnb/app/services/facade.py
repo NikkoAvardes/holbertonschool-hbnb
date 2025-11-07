@@ -173,16 +173,12 @@ class HBnBFacade:
     def add_amenity_to_place(self, place_id, amenity_id):
         place = self.place_repo.get(place_id)
         amenity = self.amenity_repo.get(amenity_id)
-        
+
         if not place:
             raise ValueError(f"Place with id {place_id} not found")
         if not amenity:
             raise ValueError(f"Amenity with id {amenity_id} not found")
-            
-        # Check if amenity is already associated with the place
-        if amenity in place.amenities:
-            raise ValueError(f"Amenity {amenity_id} is already associated with place {place_id}")
-            
+
         place.add_amenity(amenity)
         self.place_repo.save(place)
         return place

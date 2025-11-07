@@ -13,7 +13,8 @@ amenity_model = api.model('PlaceAmenity', {
 })
 
 amenity_link_model = api.model('PlaceAmenityLink', {
-    'name': fields.String(required=True, description='Name of the amenity to add')
+    'name': fields.String(required=True,
+                          description='Name of the amenity to add')
 })
 
 user_model = api.model('PlaceUser', {
@@ -165,20 +166,30 @@ class PlaceResource(Resource):
             try:
                 latitude = float(place_data['latitude'])
                 if latitude < -90 or latitude > 90:
-                    return {'error': 'Latitude must be between -90 and 90'}, 400
+                    return {
+                        'error': 'Latitude must be between -90 and 90'
+                    }, 400
             except Exception:
-                return {'error': 'Latitude must be between -90 and 90'}, 400
+                return {
+                    'error': 'Latitude must be between -90 and 90'
+                }, 400
         if 'longitude' in place_data:
             try:
                 longitude = float(place_data['longitude'])
                 if longitude < -180 or longitude > 180:
-                    return {'error': 'Longitude must be between -180 and 180'}, 400
+                    return {
+                        'error': 'Longitude must be between -180 and 180'
+                    }, 400
             except Exception:
                 return {'error': 'Longitude must be between -180 and 180'}, 400
         if 'owner_id' in place_data:
             owner = facade.get_user(place_data['owner_id'])
             if not owner:
-                return {'error': f"Owner with id {place_data['owner_id']} not found"}, 400
+                return {
+                    'error': (
+                        f"Owner with id {place_data['owner_id']} not found"
+                    )
+                }, 400
 
         try:
             update_place = facade.update_place(place_id, place_data)
@@ -199,7 +210,7 @@ class PlaceReviewList(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-            
+
         reviews = facade.get_reviews_by_place(place_id)
         return [
             {
@@ -219,12 +230,12 @@ class PlaceAmenityList(Resource):
         # Vérifier que place_id est fourni
         if not place_id:
             return {"error": "Place ID is required"}, 400
-            
+
         # Vérifier que la place existe
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-            
+
         amenities = [
             {
                 'id': amenity.id,
@@ -243,38 +254,41 @@ class PlaceAmenityList(Resource):
         """Add an amenity to a specific place"""
         current_user_id = get_jwt_identity()
         data = api.payload
-        
+
         # Vérifier que place_id est fourni
         if not place_id:
             return {"error": "Place ID is required"}, 400
-            
+
         # Vérifier que le nom de l'amenity est fourni
         amenity_name = data.get('name')
         if not amenity_name or not amenity_name.strip():
             return {"error": "Amenity name is required"}, 400
-            
+
         # Vérifier que la place existe
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-            
+
         # Vérifier que l'utilisateur est propriétaire ou admin
         claims = get_jwt()
         is_admin = claims.get('is_admin', False)
         if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
-            
+
         try:
             # Récupérer ou créer l'amenity par son nom
             amenity = facade.get_amenity_by_name(amenity_name.strip())
             if not amenity:
                 # Créer l'amenity si elle n'existe pas
                 amenity = facade.create_amenity({'name': amenity_name.strip()})
-            
-            # Vérifier que l'amenity n'est pas déjà associée à cette place
+
             if amenity in place.amenities:
-                return {"error": "Amenity is already associated with this place"}, 409
-            
+                return {
+                    "error": (
+                        "Amenity is already associated with this place"
+                    )
+                }, 409
+
             # Ajouter l'amenity au place
             facade.add_amenity_to_place(place_id, amenity.id)
             return {"message": "Amenity successfully added to place"}, 201

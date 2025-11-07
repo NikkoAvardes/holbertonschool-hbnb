@@ -46,12 +46,12 @@ class AmenityList(Resource):
         try:
             if not data or not data.get('name'):
                 return {"error": "Name is required"}, 400
-            
+
             # Vérifier si l'amenity existe déjà
             existing_amenity = facade.get_amenity_by_name(data.get('name'))
             if existing_amenity:
                 return {"error": "Amenity already exists"}, 409
-            
+
             new_amenity = facade.create_amenity(data)
             return new_amenity.to_dict(), 201
         except ValueError as e:
