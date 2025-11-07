@@ -159,9 +159,30 @@ class HBnBFacade:
     def get_amenity(self, amenity_id):
         return self.amenity_repo.get(amenity_id)
 
+    def get_amenity_by_name(self, name):
+        """Retrieve an amenity by its name."""
+        return self.amenity_repo.get_by_attribute('name', name)
+
     def get_all_amenities(self):
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
         self.amenity_repo.update(amenity_id, amenity_data)
         return self.get_amenity(amenity_id)
+
+    def add_amenity_to_place(self, place_id, amenity_id):
+        place = self.place_repo.get(place_id)
+        amenity = self.amenity_repo.get(amenity_id)
+        
+        if not place:
+            raise ValueError(f"Place with id {place_id} not found")
+        if not amenity:
+            raise ValueError(f"Amenity with id {amenity_id} not found")
+            
+        # Check if amenity is already associated with the place
+        if amenity in place.amenities:
+            raise ValueError(f"Amenity {amenity_id} is already associated with place {place_id}")
+            
+        place.add_amenity(amenity)
+        self.place_repo.save(place)
+        return place

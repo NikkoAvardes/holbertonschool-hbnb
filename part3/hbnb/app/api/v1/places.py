@@ -12,6 +12,10 @@ amenity_model = api.model('PlaceAmenity', {
     'name': fields.String(description='Name of the amenity')
 })
 
+amenity_link_model = api.model('PlaceAmenityLink', {
+    'name': fields.String(required=True, description='Name of the amenity to add')
+})
+
 user_model = api.model('PlaceUser', {
     'id': fields.String(description='User ID'),
     'first_name': fields.String(description='First name of the owner'),
@@ -204,3 +208,75 @@ class PlaceReviewList(Resource):
                 'rating': review.rating
             } for review in reviews
         ], 200
+
+
+@api.route('/<place_id>/amenities')
+class PlaceAmenityList(Resource):
+    @api.response(200, 'List of amenities for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all amenities for a specific place"""
+        # Vérifier que place_id est fourni
+        if not place_id:
+            return {"error": "Place ID is required"}, 400
+            
+        # Vérifier que la place existe
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+            
+        amenities = [
+            {
+                'id': amenity.id,
+                'name': amenity.name
+            } for amenity in place.amenities
+        ]
+        return amenities, 200
+
+    @jwt_required()
+    @api.expect(amenity_link_model)
+    @api.response(201, 'Amenity successfully added to place')
+    @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
+    def post(self, place_id):
+        """Add an amenity to a specific place"""
+        current_user_id = get_jwt_identity()
+        data = api.payload
+        
+        # Vérifier que place_id est fourni
+        if not place_id:
+            return {"error": "Place ID is required"}, 400
+            
+        # Vérifier que le nom de l'amenity est fourni
+        amenity_name = data.get('name')
+        if not amenity_name or not amenity_name.strip():
+            return {"error": "Amenity name is required"}, 400
+            
+        # Vérifier que la place existe
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+            
+        # Vérifier que l'utilisateur est propriétaire ou admin
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        if not is_admin and place.owner_id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
+            
+        try:
+            # Récupérer ou créer l'amenity par son nom
+            amenity = facade.get_amenity_by_name(amenity_name.strip())
+            if not amenity:
+                # Créer l'amenity si elle n'existe pas
+                amenity = facade.create_amenity({'name': amenity_name.strip()})
+            
+            # Vérifier que l'amenity n'est pas déjà associée à cette place
+            if amenity in place.amenities:
+                return {"error": "Amenity is already associated with this place"}, 409
+            
+            # Ajouter l'amenity au place
+            facade.add_amenity_to_place(place_id, amenity.id)
+            return {"message": "Amenity successfully added to place"}, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
