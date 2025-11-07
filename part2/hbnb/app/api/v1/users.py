@@ -108,9 +108,12 @@ class UserResource(Resource):
         """
         user_data = api.payload
         try:
-            updated_user = facade.update_user(user_id, user_data)
-            if not updated_user:
+            # Vérifier que l'utilisateur existe
+            existing_user = facade.get_user(user_id)
+            if not existing_user:
                 return {'error': 'User not found'}, 404
+            
+            updated_user = facade.update_user(user_id, user_data)
             return {
                 'id': updated_user.id,
                 'first_name': updated_user.first_name,

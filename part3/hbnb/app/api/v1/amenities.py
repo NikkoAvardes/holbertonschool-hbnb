@@ -47,8 +47,6 @@ class AmenityList(Resource):
             if not data or not data.get('name'):
                 return {"error": "Name is required"}, 400
             new_amenity = facade.create_amenity(data)
-            if new_amenity is None:
-                return {"error": "Failed to create amenity"}, 409
             return new_amenity.to_dict(), 201
         except ValueError as e:
             return {"error": str(e)}, 400
@@ -95,7 +93,6 @@ class AmenityResource(Resource):
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
-    @jwt_required()
     def put(self, amenity_id):
         """Met à jour les informations d'une amenity"""
         current_user_id = get_jwt_identity()
@@ -109,12 +106,13 @@ class AmenityResource(Resource):
         if not data or not data.get('name'):
             return {"error": "Name is required"}, 400
 
-        # Debug: vérifier si l'amenity existe avant update
+        # Vérifier si l'amenity existe
         existing_amenity = facade.get_amenity(amenity_id)
         if not existing_amenity:
             return {"error": "Amenity not found"}, 404
 
-        updated_amenity = facade.update_amenity(amenity_id, data)
-        if not updated_amenity:
-            return {"error": "Data is invalid"}, 400
-        return {"message": "Amenity updated successfully"}, 200
+        try:
+            updated_amenity = facade.update_amenity(amenity_id, data)
+            return {"message": "Amenity updated successfully"}, 200
+        except ValueError as e:
+            return {"error": str(e)}, 400

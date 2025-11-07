@@ -82,7 +82,7 @@ class HBnBFacade:
         owner_id = place_data.get('owner_id')
         owner = self.user_repo.get(owner_id)
         if not owner:
-            return None, f"Owner with id {owner_id} not found"
+            raise ValueError(f"Owner with id {owner_id} not found")
 
         # Create place_data copy without owner_id and add owner object
         place_args = place_data.copy()
@@ -111,11 +111,11 @@ class HBnBFacade:
         user = self.user_repo.get(user_id)
         place = self.place_repo.get(place_id)
         if not user or not place:
-            return {"error": "Invalid user_id or place_id"}, 400
+            raise ValueError("Invalid user_id or place_id")
 
         # Vérifie le rating
         if not isinstance(rating, int) or not (1 <= rating <= 5):
-            return {"error": "Rating must be an integer between 1 and 5"}, 400
+            raise ValueError("Rating must be an integer between 1 and 5")
 
         # Crée la review
         new_review = Review(text=text, rating=rating,
@@ -127,78 +127,39 @@ class HBnBFacade:
         # Lie la review au lieu
         place.add_review(new_review)
 
-        # Retourne un dictionnaire prêt pour Flask
-        return {
-            "id": new_review.id,
-            "user_id": new_review.user_id,
-            "place_id": new_review.place_id,
-            "text": new_review.text,
-            "rating": new_review.rating
-        }, 201
+        return new_review
 
     def get_review(self, review_id):
-        review = self.review_repo.get(review_id)
-        if not review:
-            return {'error': 'Review not found'}, 404
-        return {
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user_id,
-            'place_id': review.place_id
-        }, 200
+        return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
-        reviews = self.review_repo.get_all()
-        # Convert to dictionary format for JSON serialization
-        # (only id, text, rating for list)
-        reviews_list = [
-            {
-                'id': review.id,
-                'text': review.text,
-                'rating': review.rating
-            } for review in reviews
-        ]
-        return reviews_list, 200
+        return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
         place = self.place_repo.get(place_id)
-        if not place:
-            return {'error': 'Place not found'}, 404
-
         reviews = [r for r in self.review_repo.get_all()
                    if r.place_id == place_id]
-        reviews_list = [
-            {
-                'id': review.id,
-                'text': review.text,
-                'rating': review.rating
-            } for review in reviews
-        ]
-        return reviews_list, 200
+        return reviews
 
     def update_review(self, review_id, review_data):
         review = self.review_repo.get(review_id)
-        if not review:
-            return {'error': 'Review not found'}, 404
 
         # Validate rating if provided
         rating = review_data.get('rating')
         if rating is not None and (not
                                    isinstance(rating,
                                               int) or not (1 <= rating <= 5)):
-            return {"error": "Rating must be an integer between 1 and 5"}, 400
+            raise ValueError("Rating must be an integer between 1 and 5")
 
         self.review_repo.update(review_id, review_data)
-        return {'message': 'Review updated successfully'}, 200
+        return self.review_repo.get(review_id)
 
     def delete_review(self, review_id):
         review = self.review_repo.get(review_id)
         if not review:
-            return {'error': 'Review not found'}, 404
+            raise ValueError(f"Review with id {review_id} not found")
 
         self.review_repo.delete(review_id)
-        return {'message': 'Review deleted successfully'}, 200
 
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)

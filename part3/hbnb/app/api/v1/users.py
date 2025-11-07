@@ -147,10 +147,14 @@ class UserResource(Resource):
                 existing_user = facade.get_user_by_email(email)
                 if existing_user and existing_user.id != user_id:
                     return {'error': 'Email already in use'}, 400
+            
+            # Vérifier que l'utilisateur existe
+            existing_user = facade.get_user(user_id)
+            if not existing_user:
+                return {'error': 'User not found'}, 404
+                
             try:
                 updated_user = facade.update_user(user_id, user_data)
-                if not updated_user:
-                    return {'error': 'User not found'}, 404
                 return {
                     'id': updated_user.id,
                     'first_name': updated_user.first_name,
@@ -166,10 +170,13 @@ class UserResource(Resource):
         if 'email' in user_data or 'password' in user_data:
             return {'error': 'You cannot modify email or password'}, 400
 
+        # Vérifier que l'utilisateur existe
+        existing_user = facade.get_user(user_id)
+        if not existing_user:
+            return {'error': 'User not found'}, 404
+            
         try:
             updated_user = facade.update_user(user_id, user_data)
-            if not updated_user:
-                return {'error': 'User not found'}, 404
             return {
                 'id': updated_user.id,
                 'first_name': updated_user.first_name,

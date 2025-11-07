@@ -68,10 +68,7 @@ class PlaceList(Resource):
             if existing_place:
                 return {'error': 'Place already exist'}, 400
 
-            result = facade.create_place(place_data)
-            if isinstance(result, tuple):  # Error case
-                return {'error': result[1]}, 400
-            new_place = result
+            new_place = facade.create_place(place_data)
             return {
                 'id': str(new_place.id),
                 'title': new_place.title,
@@ -152,10 +149,38 @@ class PlaceResource(Resource):
         if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
+        # Validate input data
+        if 'title' in place_data:
+            if not place_data['title'] or not str(place_data['title']).strip():
+                return {'error': 'Title cannot be empty'}, 400
+        if 'price' in place_data:
+            try:
+                price = float(place_data['price'])
+                if price <= 0:
+                    return {'error': 'Price must be a positive number'}, 400
+            except Exception:
+                return {'error': 'Price must be a positive number'}, 400
+        if 'latitude' in place_data:
+            try:
+                latitude = float(place_data['latitude'])
+                if latitude < -90 or latitude > 90:
+                    return {'error': 'Latitude must be between -90 and 90'}, 400
+            except Exception:
+                return {'error': 'Latitude must be between -90 and 90'}, 400
+        if 'longitude' in place_data:
+            try:
+                longitude = float(place_data['longitude'])
+                if longitude < -180 or longitude > 180:
+                    return {'error': 'Longitude must be between -180 and 180'}, 400
+            except Exception:
+                return {'error': 'Longitude must be between -180 and 180'}, 400
+        if 'owner_id' in place_data:
+            owner = facade.get_user(place_data['owner_id'])
+            if not owner:
+                return {'error': f"Owner with id {place_data['owner_id']} not found"}, 400
+
         try:
             update_place = facade.update_place(place_id, place_data)
-            if not update_place:
-                return {"error": "Place not found"}, 404
             return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -169,5 +194,16 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        result, status = facade.get_reviews_by_place(place_id)
-        return result, status
+        # Vérifier que la place existe
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+            
+        reviews = facade.get_reviews_by_place(place_id)
+        return [
+            {
+                'id': review.id,
+                'text': review.text,
+                'rating': review.rating
+            } for review in reviews
+        ], 200
