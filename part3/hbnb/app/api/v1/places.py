@@ -106,15 +106,13 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
-        # Récupérer toutes les commodités disponibles du système
-        # et les retourner comme amenities pour cette place
-        all_amenities = facade.get_all_amenities()
-        amenities_data = [
+        # Récupérer les amenities associées à cette place spécifique
+        place_amenities = [
             {
                 'id': amenity.id,
                 'name': amenity.name
             }
-            for amenity in all_amenities
+            for amenity in place.amenities
         ]
 
         return {
@@ -131,7 +129,6 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
-    @jwt_required()
     @api.response(403, 'Unauthorized action')
     def put(self, place_id):
         """Update a place's information"""
