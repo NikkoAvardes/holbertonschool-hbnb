@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add Review</title>
+	<link rel="icon" type="image/png" href="/static/images/icon.png">
+	<link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+	<!-- Corps principal de la page -->
+	<header>
+		<div>
+			<a href="index.html"><img src="/static/images/logo.png" alt="logo-Hbnb" class="logo"></a>
+		</div>
+        <nav>
+            <!-- Barre de navigation principale -->
+            <a href="index.html">Home</a>
+            <a href="login.html" class="login-button">Login</a>
+        </nav>
+    </header>
+	<main>
+		<!-- Contenu principal de la page d'ajout d'avis -->
+		<section class="add-review">
+			<h2>Add a Review</h2>
+			<form class="form" id="review-form">
+				<label for="review">Your Review:</label>
+				<textarea id="review" name="review" required></textarea>
+				<label for="rating">Rating:</label>
+				<select id="rating" name="rating" required>
+					<option value="">Select rating</option>
+					<option value="1">1 Star</option>
+					<option value="2">2 Stars</option>
+					<option value="3">3 Stars</option>
+					<option value="4">4 Stars</option>
+					<option value="5">5 Stars</option>
+				</select>
+				<button type="submit">Submit Review</button>
+			</form>
+		</section>
+	</main>
+	<!-- Footer -->
+	<footer>
+		<p>© 2025 All rights reserved</p>
+	</footer>
+	<script src="/static/scripts.js"></script>
+</body>
+
+</html>

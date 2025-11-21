@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Place Details</title>
+	<link rel="icon" type="image/png" href="/static/images/icon.png">
+	<link rel="stylesheet" href="/static/styles.css">
+</head>
+<!-- Corps principal de la page -->
+
+<body>
+	<header>
+		<div>
+			<a href="index.html"><img src="/static/images/logo.png" alt="logo-Hbnb" class="logo"></a>
+		</div>
+		<nav>
+			<!-- Barre de navigation principale -->
+			<a href="index.html">Home</a>
+			<a href="login.html" class="login-button">Login</a>
+		</nav>
+	</header>
+	<main>
+		<h2 id="place-title"></h2>
+		<section id="place-details" class="place-details">
+			<!-- Place details will be loaded here -->
+		</section>
+		<section id="reviews">
+			<h2>Reviews</h2>
+			<div id="reviews-list">
+				<!-- Reviews will be loaded here -->
+			</div>
+		</section>
+		<section id="add-review" class="add-review" style="display: none;">
+			<h2>Add a Review</h2>
+			<form class="form" id="review-form">
+				<label for="review-text">Review:</label>
+				<textarea id="review-text" name="review-text" required></textarea>
+				<label for="rating">Rating:</label>
+				<select id="rating" name="rating" required>
+					<option value="">Select rating</option>
+					<option value="1">1 Star</option>
+					<option value="2">2 Stars</option>
+					<option value="3">3 Stars</option>
+					<option value="4">4 Stars</option>
+					<option value="5">5 Stars</option>
+				</select>
+				<button type="submit">Submit</button>
+			</form>
+		</section>
+	</main>
+	<!-- Footer -->
+	<footer>
+		<p>© 2025 All rights reserved</p>
+	</footer>
+	<script src="/static/scripts.js"></script>
+</body>
+
+</html>
