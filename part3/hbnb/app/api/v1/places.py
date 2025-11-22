@@ -127,6 +127,7 @@ class PlaceResource(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
+            'owner_id': place.owner_id
         }, 200
 
     @jwt_required()
