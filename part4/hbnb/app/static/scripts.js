@@ -44,7 +44,7 @@ function updateLoginButton() {
         } else {
             // Show login link when user is not authenticated
             loginLink.textContent = 'Login';
-            loginLink.href = 'login.html';
+            loginLink.href = '/login.html';
             loginLink.onclick = null;
         }
     }
@@ -52,7 +52,7 @@ function updateLoginButton() {
 
 function logout() {
     deleteCookie('token');
-    window.location.href = 'index.html';
+    window.location.href = '/';
 }
 
 // Login Functionality
@@ -158,7 +158,7 @@ function filterPlacesByPrice(maxPrice) {
 
 // View Place Details
 function viewPlaceDetails(placeId) {
-    window.location.href = `place.html?id=${placeId}`;
+    window.location.href = `/place.html?id=${placeId}`;
 }
 
 // Fetch Place Details
@@ -250,7 +250,7 @@ async function submitReview(placeId, reviewText, rating) {
     
     if (!token) {
         alert('You must be logged in to submit a review');
-        window.location.href = 'login.html';
+        window.location.href = '/login.html';
         return { success: false };
     }
 
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 // Redirect to index page
-                window.location.href = 'index.html';
+                window.location.href = '/';
             } else {
                 // Display error message
                 if (errorElement) {
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!checkAuthentication()) {
             alert('You must be logged in to add a review');
-            window.location.href = 'index.html';
+            window.location.href = '/';
             return;
         }
 
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Redirect back to place details after 2 seconds
                     setTimeout(() => {
-                        window.location.href = `place.html?id=${placeId}`;
+                        window.location.href = `/place.html?id=${placeId}`;
                     }, 2000);
                 } else {
                     if (messageElement) {
@@ -473,9 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitButton.textContent = 'Submit Review';
                 }
             });
-        } else {
+            } else {
             alert('No place selected');
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     }
 });
