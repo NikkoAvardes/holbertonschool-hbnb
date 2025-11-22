@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBNB - Add Review</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="icon.png">
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="Application Logo" class="logo">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html" class="login-button">Login</a>
+        </nav>
+    </header>
+
+    <main class="form-container">
+        <h2 id="review-form-title">Add Review</h2>
+        
+        <div class="add-review">
+            <form id="review-form" class="form">
+                
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" required>
+                
+                <label for="review-text">Your Comment:</label>
+                <textarea id="review-text" name="review-text" rows="5" required></textarea>
+                
+                <button type="submit">Submit Review</button>
+                <p id="submit-status" style="margin-top: 10px;"></p>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 HBNB. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
