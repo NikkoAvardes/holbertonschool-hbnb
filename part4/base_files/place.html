@@ -1,38 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBNB - Place Details</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="icon.png">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Place Details</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <header>
-        <img src="logo.png" alt="Application Logo" class="logo">
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
-        </nav>
-    </header>
+	<header>
+		<img src="images/logo.png" alt="Logo of application" class="logo">
+		<nav>
+			<a href="index.html">Home</a>
+			<a class="login-button" href="login.html" id="login-link">Login</a>
+		</nav>
+	</header>
+	<main>
+		<section id="place-details" class="place-details">
+			<h2>Place Details</h2>
+			<div class="place-info">
+				<!-- Place details will be populated dynamically -->
+			</div>
+		</section>
+		<section id="reviews">
+			<h2>Reviews of the place</h2>
+			<!-- Reviews will be populated dynamically -->
+		</section>
+		<!-- Add a new review -->
+		<section id="add-review">
+			<h2>Add a Review</h2>
 
-    <main>
-        <section id="place-details-container">
-            <h2 id="place-details-loading">Loading place details...</h2>
-            
-            <div id="place-details">
-                </div>
+			<!-- Add Review Button (appears only when not connected) -->
+			<div id="add-review-button-container" style="display: none;">
+				<button id="add-review-btn" class="login-button">Login to Add Review</button>
+			</div>
 
-            <div id="add-review-section" class="add-review" style="display: none;">
-                </div>
-            
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 HBNB. All rights reserved.</p>
-    </footer>
-
-    <script src="scripts.js"></script>
+			<form id="review-form" style="display: none;">
+				<label for="rating">Rating:</label>
+				<select id="rating" name="rating" required>
+					<option value="">Select a rating</option>
+					<option value="1">1 Star</option>
+					<option value="2">2 Stars</option>
+					<option value="3">3 Stars</option>
+					<option value="4">4 Stars</option>
+					<option value="5">5 Stars</option>
+				</select>
+				<label for="review">Review:</label>
+				<textarea id="review" name="review" required></textarea>
+				<button type="submit">Submit Review</button>
+			</form>
+		</section>
+	</main>
+	<footer>
+		© 2025  All Rights Reserved.
+	</footer>
+	<script src="scripts.js"></script>
 </body>
+
 </html>

@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBNB - Login</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="icon.png">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HBnB - Login</title>
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" href="images/icon.png" type="image/png">
 </head>
+
 <body>
-    <header>
-        <img src="logo.png" alt="Application Logo" class="logo">
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
-        </nav>
-    </header>
+	<!-- Header -->
+	<header>
+		<a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
+		<a href="login.html" class="login-button" id="login-link">Login</a>
+	</header>
 
-    <main class="form-container">
-        <h2>User Login</h2>
-        <form id="login-form" class="form">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit">Login</button>
-            <p id="error-message" style="color: red; display: none; margin-top: 10px;"></p>
-        </form>
-    </main>
+	<!-- Main Content -->
+	<main>
+		<div class="login-container">
+			<h1>Login</h1>
+			<form class="form" id="login-form">
+				<div class="form-group">
+					<label for="email">Email:</label>
+					<input type="email" id="email" name="email" required placeholder="Enter your email">
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label>
+					<input type="password" id="password" name="password" required placeholder="Enter your password">
+				</div>
+				<button type="submit">Login</button>
+			</form>
+			<p id="login-error" style="color: red; margin-top: 1rem; text-align: center; display: none;"></p>
+		</div>
+	</main>
 
-    <footer>
-        <p>&copy; 2025 HBNB. All rights reserved.</p>
-    </footer>
+	<!-- Footer -->
+	<footer>
+		<p>&copy; 2024 HBnB. All rights reserved.</p>
+	</footer>
 
-    <script src="scripts.js"></script>
+	<script src="scripts.js"></script>
 </body>
+
 </html>

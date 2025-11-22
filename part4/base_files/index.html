@@ -3,40 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBNB - List of Places</title>
+    <title>List of Places</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="icon.png">
+    <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Application Logo" class="logo">
+        <a href="index.html"><img src="images/logo.png" alt="Logo of application" class="logo"></a>
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" id="login-link" class="login-button" style="display: none;">Login</a>
-            <a href="#" id="logout-button" class="login-button" style="display: none;">Logout</a>
+            <a class="login-button" href="login.html" id="login-link">Login</a>
         </nav>
     </header>
-
     <main>
-        <section class="filter-controls">
-            <h2>Filter Places</h2>
-            <label for="price-filter">Max Price Per Night:</label>
+        <section id="filter">
+            <h2>Available Places</h2>
+            <label class="select-price" for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <option value="all">All</option>
-                <option value="10">Up to 10</option>
-                <option value="50">Up to 50</option>
-                <option value="100">Up to 100</option>
+                <!-- Options will be populated dynamically -->
+                <option value="all">all</option>
+                <option value="10">$10</option>
+                <option value="50">$50</option>
+                <option value="100">$100</option>
             </select>
         </section>
-        
-        <section id="places-list" class="places-grid">
-            </section>
+        <section id="places-list">
+            <h2>Places List</h2>
+            <!-- List of places will be populated dynamically -->
+        </section>
     </main>
-
     <footer>
-        <p>&copy; 2025 HBNB. All rights reserved.</p>
+        © 2025 All Rights Reserved.
     </footer>
-
     <script src="scripts.js"></script>
 </body>
 </html>
