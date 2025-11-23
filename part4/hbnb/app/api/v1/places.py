@@ -113,13 +113,13 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
 
         # Récupérer les amenities associées à cette place spécifique
-        place_amenities = [
-            {
-                'id': amenity.id,
-                'name': amenity.name
-            }
-            for amenity in place.amenities
-        ]
+        # place_amenities = [
+        #     {
+        #         'id': amenity.id,
+        #         'name': amenity.name
+        #     }
+        #     for amenity in place.amenities
+        # ]
 
         owner = facade.get_user(place.owner_id)
         owner_data = None
@@ -208,7 +208,7 @@ class PlaceResource(Resource):
                 }, 400
 
         try:
-            update_place = facade.update_place(place_id, place_data)
+            # update_place = facade.update_place(place_id, place_data)
             return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -245,7 +245,8 @@ class PlaceReviewList(Resource):
 
 @api.route('/<place_id>/amenities')
 class PlaceAmenityList(Resource):
-    @api.response(200, 'List of amenities for the place retrieved successfully')
+    @api.response(200, 'List of amenities for the '
+                  'place retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all amenities for a specific place"""

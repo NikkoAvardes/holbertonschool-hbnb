@@ -1,7 +1,9 @@
+<!-- Fichier HTML pour les détails d'un lieu -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+	<!-- Métadonnées et liens vers les styles -->
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Place Details</title>
@@ -10,6 +12,7 @@
 </head>
 
 <body>
+	<!-- En-tête du site avec logo et navigation -->
 	<header>
 		<a href="/"><img src="/static/images/logo.png" alt="Logo of application" class="logo"></a>
 		<nav>
@@ -17,20 +20,23 @@
 			<a class="login-button" href="/login.html" id="login-link">Login</a>
 		</nav>
 	</header>
-	<main>
-		<section id="place-details" class="place-details">
+		<!-- Contenu principal -->
+		<main>
+			<!-- Section des détails du lieu -->
+		<div id="place-details" class="place-details">
 			<div id="place-info" class="place-info">
 				<!-- Place details will be populated dynamically -->
 			</div>
-		</section>
-		<section id="reviews">
+		</div>
+			<!-- Section des avis -->
+			<section id="reviews">
 			<h2>Reviews</h2>
 			<div id="reviews-list"></div>
 		</section>
-		<!-- Add a new review -->
-		<section id="add-review">
+			<!-- Section pour ajouter un nouvel avis -->
+		<div id="add-review">
 
-			<!-- Add Review Button (appears only when not connected) -->
+			<!-- Add Review Button -->
 			<div id="add-review-button-container" style="display: none;">
 				<button id="add-review-btn" class="login-button">Login to Add Review</button>
 			</div>
@@ -51,12 +57,14 @@
 
 				<button type="submit">Submit Review</button>
 			</form>
-		</section>
+		</div>
 	</main>
-	<footer>
+		<!-- Pied de page -->
+		<footer>
 		© 2025  All Rights Reserved.
 	</footer>
-	<script src="/static/scripts.js"></script>
+		<!-- Script JS -->
+		<script src="/static/scripts.js"></script>
 </body>
 
 </html>

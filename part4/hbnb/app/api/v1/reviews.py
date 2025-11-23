@@ -147,5 +147,5 @@ class ReviewResource(Resource):
 
             facade.delete_review(review_id)
             return {"message": "Review deleted successfully"}, 200
-        except Exception as e:
+        except Exception:
             return {"error": "Invalid input data"}, 400
