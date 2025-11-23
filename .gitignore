@@ -8,3 +8,4 @@ venv/
 .vscode/
 part3/hbnb/tests/HBNB_API.postman_collection.json
 part3/hbnb/instance/
+*.code-workspace

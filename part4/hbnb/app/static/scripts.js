@@ -202,18 +202,17 @@ function displayPlaceDetails(place) {
     const placeInfo = document.getElementById('place-info');
     if (!placeInfo || !place) return;
 
-    const amenitiesList = place.amenities && place.amenities.length > 0
-        ? `<ul>${place.amenities.map(a => `<li>${a.name || a}</li>`).join('')}</ul>`
-        : '<p>No amenities listed</p>';
+    const amenitiesInline = place.amenities && place.amenities.length > 0
+        ? place.amenities.map(a => a.name || a).join(', ')
+        : 'No amenities listed';
 
     placeInfo.innerHTML = `
-        <h1>${place.title || 'Unnamed Place'}</h1>
-        <p class="host">Host: ${place.owner ? place.owner.first_name + ' ' + place.owner.last_name : 'Unknown'}</p>
-        <p class="price">$${place.price || 0} per night</p>
-        <p class="description">${place.description || 'No description available'}</p>
-        <div class="amenities">
-            <h3>Amenities</h3>
-            ${amenitiesList}
+        <h1 class="place-title">${place.title || 'Unnamed Place'}</h1>
+        <div class="place-details-box">
+            <p class="place-detail"><b>Host:</b> ${place.owner ? place.owner.first_name + ' ' + place.owner.last_name : 'Unknown'}</p>
+            <p class="place-detail"><b>Price per night:</b> $${place.price || 0}</p>
+            <p class="place-detail"><b>Description:</b> ${place.description || 'No description available'}</p>
+            <p class="place-detail"><b>Amenities:</b> ${amenitiesInline}</p>
         </div>
     `;
 }
@@ -243,7 +242,7 @@ function displayReviews(reviews) {
     reviewsList.innerHTML = '';
 
     if (reviews.length === 0) {
-        reviewsList.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No reviews yet. Be the first to review!</p>';
+        reviewsList.innerHTML = '<p style="text-align: left; color: #7f8c8d;">No reviews yet. Be the first to review!</p>';
         return;
     }
 
@@ -253,10 +252,11 @@ function displayReviews(reviews) {
         
         card.innerHTML = `
             <div class="review-header">
-                <span class="reviewer-name">${review.user_name}</span>
-                <span class="rating"> ${review.rating || 'N/A'}/5</span>
-            </div>
-            <p class="comment">${review.comment || review.text || 'No comment provided'}</p>
+                <span class="reviewer-name">${review.user_name}:</span>
+            
+				<p class="comment">${review.comment || review.text || 'No comment provided'}</p>
+				<span class="rating"> Rating: ${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))} </span>
+			</div>
         `;
         
         reviewsList.appendChild(card);
