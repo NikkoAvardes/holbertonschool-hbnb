@@ -115,13 +115,13 @@ async function fetchPlaces(token) {
 
 // Display Places as Cards
 function displayPlaces(places) {
-    const placesList = document.getElementById('places-list');
-    if (!placesList) return;
+    const placesRow = document.getElementById('places-row');
+    if (!placesRow) return;
 
-    placesList.innerHTML = '';
+    placesRow.innerHTML = '';
 
     if (places.length === 0) {
-        placesList.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No places available at the moment.</p>';
+        placesRow.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No places available at the moment.</p>';
         return;
     }
 
@@ -129,31 +129,50 @@ function displayPlaces(places) {
         const card = document.createElement('div');
         card.className = 'place-card';
         card.setAttribute('data-price', place.price || 0);
-        
+
         card.innerHTML = `
             <h3>${place.title || 'Unnamed Place'}</h3>
             <p class="price">$${place.price || 0} / night</p>
             <p>${place.description ? place.description.substring(0, 100) + '...' : 'No description available'}</p>
             <button class="details-button" onclick="viewPlaceDetails('${place.id}')">View Details</button>
         `;
-        
-        placesList.appendChild(card);
+
+        placesRow.appendChild(card);
     });
 }
 
 // Filter Places by Price
 function filterPlacesByPrice(maxPrice) {
     const placeCards = document.querySelectorAll('.place-card');
-    
+    let visibleCount = 0;
+
     placeCards.forEach(card => {
         const price = parseFloat(card.getAttribute('data-price'));
-        
         if (maxPrice === 'all' || price <= parseFloat(maxPrice)) {
-            card.style.display = 'flex';
+            card.style.display = '';
+            visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+
+    // Afficher le message si aucune place n'est visible
+    const placesRow = document.getElementById('places-row');
+    let noPlacesMsg = document.getElementById('no-places-msg');
+    if (visibleCount === 0) {
+        if (!noPlacesMsg) {
+            noPlacesMsg = document.createElement('p');
+            noPlacesMsg.id = 'no-places-msg';
+            noPlacesMsg.style.textAlign = 'center';
+            noPlacesMsg.style.color = '#7f8c8d';
+            noPlacesMsg.textContent = 'No available places';
+            placesRow.appendChild(noPlacesMsg);
+        }
+    } else {
+        if (noPlacesMsg) {
+            noPlacesMsg.remove();
+        }
+    }
 }
 
 // View Place Details
@@ -373,43 +392,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayReviews(reviews);
             });
 
-            // Show/hide review form based on authentication
-            const addReviewSection = document.getElementById('add-review');
-            if (addReviewSection) {
-                if (checkAuthentication()) {
-                    addReviewSection.style.display = 'block';
-                } else {
-                    addReviewSection.style.display = 'none';
+            // Show/hide review form and login button based on authentication
+            const reviewForm = document.getElementById('review-form');
+            const addReviewBtnContainer = document.getElementById('add-review-button-container');
+            if (checkAuthentication()) {
+                if (reviewForm) reviewForm.style.display = 'block';
+                if (addReviewBtnContainer) addReviewBtnContainer.style.display = 'none';
+            } else {
+                if (reviewForm) reviewForm.style.display = 'none';
+                if (addReviewBtnContainer) addReviewBtnContainer.style.display = 'block';
+                const addReviewBtn = document.getElementById('add-review-btn');
+                if (addReviewBtn) {
+                    addReviewBtn.onclick = function() {
+                        window.location.href = '/login.html';
+                    };
                 }
             }
 
             // Review form submission
-            const reviewForm = document.getElementById('review-form');
             if (reviewForm) {
                 reviewForm.addEventListener('submit', async (event) => {
                     event.preventDefault();
-                    
                     const reviewText = document.getElementById('review-text').value;
                     const rating = document.getElementById('rating').value;
-                    
                     const submitButton = reviewForm.querySelector('button[type="submit"]');
                     submitButton.disabled = true;
                     submitButton.textContent = 'Submitting...';
-
                     const result = await submitReview(placeId, reviewText, rating);
-
                     if (result.success) {
                         alert('Review submitted successfully!');
-                        // Reload reviews
                         fetchReviews(placeId).then(reviews => {
                             displayReviews(reviews);
                         });
-                        // Clear form
                         reviewForm.reset();
                     } else {
                         alert('Error: ' + result.error);
                     }
-
                     submitButton.disabled = false;
                     submitButton.textContent = 'Submit Review';
                 });

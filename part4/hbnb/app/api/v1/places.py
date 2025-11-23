@@ -96,6 +96,7 @@ class PlaceList(Resource):
             {
                 'id': place.id,
                 'title': place.title,
+                'description': place.description,
                 'price': place.price
             } for place in places
         ], 200
@@ -127,7 +128,11 @@ class PlaceResource(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner_id': place.owner_id
+            'owner_id': place.owner_id,
+            'amenities': [
+                {'id': amenity.id, 'name': amenity.name}
+                for amenity in place.amenities
+            ]
         }, 200
 
     @jwt_required()
