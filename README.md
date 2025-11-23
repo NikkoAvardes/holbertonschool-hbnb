@@ -1,116 +1,105 @@
-# 🏠 AirBnB Clone – HBnB Project
+# 🏠 HBnB – Plateforme de location collaborative
 
-Un projet complet de plateforme de location inspiré d’**AirBnB**, développé dans le cadre du cursus **Holberton School**.  
-Il s’agit de l’un des projets les plus importants du programme, réalisé en équipe, visant à construire une application **Full-Stack** alliant architecture, back-end, et interface web.
-
-Ce clone d’AirBnB permet aux utilisateurs de publier, rechercher et réserver des logements, tout en offrant un système d’authentification sécurisé et une base de données relationnelle robuste.  
-Le projet est conçu selon une **architecture modulaire** et suit une progression en quatre grandes phases, de la modélisation UML à la création du client web.
+Bienvenue dans la dernière étape du projet HBnB, conçu pour le cursus Holberton School.  
+Ce projet Full-Stack, inspiré d’AirBnB, combine une API robuste, une base de données relationnelle et une interface web moderne pour offrir une expérience utilisateur complète : publier, explorer et commenter des logements en toute sécurité.
 
 ---
 
-## 🧭 Table des matières
-- [📘 Introduction](#-introduction)
-- [🏗️ Architecture du projet](#️-architecture-du-projet)
-- [🧩 Fonctionnalités principales](#-fonctionnalités-principales)
-- [⚙️ Installation & Démarrage](#️-installation--démarrage)
-- [📡 Exemples d’utilisation (curl)](#-exemples-dutilisation-curl)
-- [🧪 Tests automatisés](#-tests-automatisés)
-- [🧰 Stack technique](#-stack-technique)
-- [👥 Auteurs](#-auteurs)
+## 🧭 Sommaire
+- [Présentation](#présentation)
+- [Architecture & Phases](#architecture--phases)
+- [Fonctionnalités](#fonctionnalités)
+- [Installation & Lancement](#installation--lancement)
+- [Auteurs](#auteurs)
 
 ---
 
-## 📘 Introduction
-Le projet **HBnB** a pour objectif de reproduire les fonctionnalités essentielles d’AirBnB à travers une approche pédagogique complète.  
-Il est divisé en plusieurs étapes qui permettent d’aborder la conception d’API, la gestion des bases de données, la sécurité des utilisateurs et l’intégration d’un front-end dynamique.
+## Présentation
 
-Chaque partie du projet approfondit un aspect différent du développement web complet, en suivant les bonnes pratiques d’architecture et de documentation.
-
----
-
-## 🏗️ Architecture du projet
-
-### 1️⃣ HBnB - UML
-Première phase : conception de l’architecture de l’application via **UML**.  
-Objectif : modéliser les entités principales (`User`, `Place`, `Review`, `Amenity`) et leurs relations pour préparer le développement.  
-Les diagrammes produits :
-- Diagrammes de classes et de séquences  
-- Organisation des packages et flux de données  
-- Documentation technique servant de base à toute l’implémentation  
+HBnB est une application collaborative de location de logements, pensée pour apprendre les principes de l’architecture logicielle, la sécurité web et l’intégration front-end.  
+Le projet se construit en quatre grandes étapes, chacune approfondissant un aspect du développement web moderne.
 
 ---
 
-### 2️⃣ HBnB - Business Logic & API
-Deuxième étape : développement du cœur applicatif et des routes **RESTful** à l’aide de **Flask** et **Flask-RESTx**.  
-- Définition des modèles métiers : `User`, `Place`, `Review`, `Amenity`  
-- Application du **pattern Façade** pour isoler la logique métier  
-- Création des endpoints CRUD (Create, Read, Update, Delete)  
-- Tests manuels via Postman et cURL  
+## Architecture & Phases
 
-> 🔒 À ce stade, aucune authentification ni base de données persistante — l’accent est mis sur la structure et la cohérence du code.
+### 1️⃣ Modélisation & UML
+- Conception des entités (`User`, `Place`, `Review`, `Amenity`) et de leurs relations
+- Diagrammes de classes, séquences et organisation des packages
+- Documentation technique pour guider l’implémentation
 
----
+### 2️⃣ Logique métier & API REST
+- Développement des modèles métiers et endpoints CRUD avec Flask/Flask-RESTx
+- Application du pattern Façade pour la logique métier
+- Tests manuels via Postman/cURL
 
-### 3️⃣ HBnB - Auth & Database
-Troisième étape : ajout de la **base de données** et du **système d’authentification JWT**.  
-- Migration vers **SQLAlchemy ORM** avec une base **SQLite/MySQL**  
-- Gestion complète des relations (1-N et N-N)  
-- Authentification et rôles utilisateurs (admin / user)  
-- Sécurisation des endpoints avec tokens JWT  
-- Validation et intégrité des données  
+### 3️⃣ Authentification & Base de données
+- Intégration de SQLAlchemy ORM (SQLite/MySQL)
+- Gestion des relations complexes (1-N, N-N)
+- Authentification JWT, rôles utilisateurs, sécurisation des endpoints
+- Validation et intégrité des données
 
-Cette étape rend le back-end prêt pour un déploiement réel.
+### 4️⃣ Interface Web interactive
 
----
-
-### 4️⃣ HBnB - Simple Web Client
-...
+La quatrième phase introduit le front-end : une interface web dynamique qui dialogue avec l’API.  
+Objectif : permettre aux utilisateurs de naviguer, filtrer, se connecter et publier des avis en temps réel.
 
 ---
 
-## 🧩 Fonctionnalités principales
+## Fonctionnalités
 
-### 🏡 Gestion des logements (Places)
-- Reliés à un utilisateur propriétaire (`owner_id`)  
-- Coordonnées GPS (latitude / longitude)  
-- Liés à plusieurs commodités (`amenities`)  
-- Validation stricte des champs  
-
-### 💬 Avis (Reviews)
-- Chaque avis appartient à un utilisateur et un logement  
-- Champs : note (rating), texte, date  
-- Seul l’auteur ou un admin peut modifier/supprimer  
-
-### 🪑 Commodités (Amenities)
-- CRUD complet sauf suppression  
-- Nom unique (max 50 caractères)  
-- Association via une table de liaison avec les `Places`  
-
-### 🔑 Authentification JWT
-- Login via `/api/v1/auth/login`  
-- Token dans le header : `Authorization: Bearer <token>`  
-- Décodage automatique avec `@jwt_required()`  
-- Le mot de passe n’est **jamais retourné**  
+- **Accueil dynamique** : liste des logements, filtrage par prix
+- **Connexion sécurisée** : gestion du JWT dans les cookies
+- **Détail d’un logement** : description, hôte, prix, commodités, avis
+- **Ajout d’avis** : formulaire accessible uniquement aux utilisateurs connectés
+- **Navigation fluide** : transitions sans rechargement complet
+- **Design responsive** : adapté à tous les écrans
+- **Séparation claire** : API backend et client web indépendants
 
 ---
 
-## ⚙️ Installation & Démarrage
+## Installation & Lancement
 
-### 🔧 Prérequis
-- Python ≥ 3.12  
-- pip et virtualenv installés  
+### Prérequis
+- Python ≥ 3.12
+- pip et virtualenv
 
-### 🚀 Installation
+### Installation
 ```bash
-git clone https://github.com/<ton_nom_d_utilisateur>/<ton_repo>.git
-cd <ton_repo>
+cd part4/hbnb
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
 
+### Démarrage du serveur
+```bash
+python3 run.py
+```
+Accède à l’application sur : [http://127.0.0.1:5000](http://127.0.0.1:5000)  
+Pour arrêter le serveur : `CTRL + C`
 
-## 👥 Auteurs
+---
+
+## Technologies
+
+- Python 3.12, Flask, Flask-RESTx, Flask-JWT-Extended, Flask-Bcrypt, SQLAlchemy, pytest
+- HTML5, CSS3, JavaScript ES6
+
+---
+
+## 👥 Équipe
 
 - Nina
 - Aurélie
 - Nicolai
+
+## Technologies utilisées
+
+- **Python 3.12**
+- **Flask**
+- **Flask-RESTx**
+- **Flask-JWT-Extended**
+- **Flask-Bcrypt**
+- **SQLAlchemy** (mapping)
+

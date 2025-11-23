@@ -1,0 +1,70 @@
+<!-- Fichier HTML pour les détails d'un lieu -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Métadonnées et liens vers les styles -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Place Details</title>
+	<link rel="stylesheet" href="/static/styles.css">
+	<link rel="icon" type="image/png" href="/static/images/icon.png">
+</head>
+
+<body>
+	<!-- En-tête du site avec logo et navigation -->
+	<header>
+		<a href="/"><img src="/static/images/logo.png" alt="Logo of application" class="logo"></a>
+		<nav>
+			<a href="/">Home</a>
+			<a class="login-button" href="/login.html" id="login-link">Login</a>
+		</nav>
+	</header>
+		<!-- Contenu principal -->
+		<main>
+			<!-- Section des détails du lieu -->
+		<div id="place-details" class="place-details">
+			<div id="place-info" class="place-info">
+				<!-- Place details will be populated dynamically -->
+			</div>
+		</div>
+			<!-- Section des avis -->
+			<section id="reviews">
+			<h2>Reviews</h2>
+			<div id="reviews-list"></div>
+		</section>
+			<!-- Section pour ajouter un nouvel avis -->
+		<div id="add-review">
+
+			<!-- Add Review Button -->
+			<div id="add-review-button-container" style="display: none;">
+				<button id="add-review-btn" class="login-button">Login to Add Review</button>
+			</div>
+
+			<form id="review-form" style="display: none;">
+				<label for="review-text">Your Review:</label>
+				<textarea id="review-text" name="review-text" required></textarea>
+
+				<label for="rating">Rating:</label>
+				<select id="rating" name="rating" required>
+					<option value="">Select a rating</option>
+					<option value="1">1 ★</option>
+					<option value="2">2 ★★</option>
+					<option value="3">3 ★★★</option>
+					<option value="4">4 ★★★★</option>
+					<option value="5">5 ★★★★★</option>
+				</select>
+
+				<button type="submit">Submit Review</button>
+			</form>
+		</div>
+	</main>
+		<!-- Pied de page -->
+		<footer>
+		© 2025  All Rights Reserved.
+	</footer>
+		<!-- Script JS -->
+		<script src="/static/scripts.js"></script>
+</body>
+
+</html>

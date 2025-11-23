@@ -1,0 +1,51 @@
+<!-- Fichier HTML pour la liste des lieux -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Métadonnées et liens vers les styles -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>List of Places</title>
+	<link rel="stylesheet" href="/static/styles.css">
+	<link rel="icon" type="image/png" href="/static/images/icon.png">
+</head>
+
+<body>
+	<!-- En-tête du site avec logo et navigation -->
+	<header>
+		<a href="/"><img src="/static/images/logo.png" alt="Logo of application" class="logo"></a>
+		<nav>
+			<a class="login-button" href="/login.html" id="login-link">Login</a>
+		</nav>
+	</header>
+	<!-- Contenu principal -->
+	<main>
+		<!-- Section de filtrage par prix -->
+		<section id="filter">
+			<h2>Available Places</h2>
+			<label class="select-price" for="price-filter">Max Price:</label>
+			<select id="price-filter">
+				<!-- Options will be populated dynamically -->
+				<option value="all">all</option>
+				<option value="10">$10</option>
+				<option value="50">$50</option>
+				<option value="100">$100</option>
+			</select>
+		</section>
+		<!-- Section de la liste des lieux -->
+		<div id="places-list">
+			<div class="places-row" id="places-row">
+				<!-- List of places will be populated dynamically -->
+			</div>
+		</div>
+	</main>
+	<!-- Pied de page -->
+	<footer>
+		© 2025 All Rights Reserved.
+	</footer>
+	<!-- Script JS -->
+	<script src="/static/scripts.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!-- Fichier HTML pour la page de connexion -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Métadonnées et liens vers les styles -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HBnB - Login</title>
+	<link rel="stylesheet" href="/static/styles.css">
+	<link rel="icon" href="/static/images/icon.png" type="image/png">
+</head>
+
+<body>
+	<!-- En-tête du site avec logo et navigation -->
+		<!-- Header -->
+	<header>
+        <a href="/"><img src="/static/images/logo.png" alt="Logo of application" class="logo"></a>
+        <nav>
+            <a href="/index.html">Home</a>
+        </nav>
+    </header>
+
+		<!-- Contenu principal : formulaire de connexion -->
+	<main>
+		<div class="login-container">
+			<h1>Login</h1>
+			<form class="form" id="login-form">
+				<div class="form-group">
+					<label for="email">Email:</label>
+					<input type="email" id="email" name="email" required placeholder="Enter your email">
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label>
+					<input type="password" id="password" name="password" required placeholder="Enter your password">
+				</div>
+				<button type="submit">Login</button>
+			</form>
+			<p id="login-error" style="color: red; margin-top: 1rem; text-align: center; display: none;"></p>
+		</div>
+	</main>
+
+	<!-- Footer -->
+		<!-- Pied de page -->
+		<footer>
+		© 2025  All Rights Reserved.
+	</footer>
+
+		<!-- Script JS -->
+		<script src="/static/scripts.js"></script>
+</body>
+
+</html>
