@@ -36,17 +36,19 @@
 			</div>
 
 			<form id="review-form" style="display: none;">
+				<label for="review-text">Your Review:</label>
+				<textarea id="review-text" name="review-text" required></textarea>
+
 				<label for="rating">Rating:</label>
 				<select id="rating" name="rating" required>
 					<option value="">Select a rating</option>
-					<option value="1">1 Star</option>
-					<option value="2">2 Stars</option>
-					<option value="3">3 Stars</option>
-					<option value="4">4 Stars</option>
-					<option value="5">5 Stars</option>
+					<option value="1">1 ★</option>
+					<option value="2">2 ★★</option>
+					<option value="3">3 ★★★</option>
+					<option value="4">4 ★★★★</option>
+					<option value="5">5 ★★★★★</option>
 				</select>
-				<label for="review-text">Review:</label>
-				<textarea id="review-text" name="review-text" required></textarea>
+
 				<button type="submit">Submit Review</button>
 			</form>
 		</section>
