@@ -121,6 +121,15 @@ class PlaceResource(Resource):
             for amenity in place.amenities
         ]
 
+        owner = facade.get_user(place.owner_id)
+        owner_data = None
+        if owner:
+            owner_data = {
+                'id': owner.id,
+                'first_name': owner.first_name,
+                'last_name': owner.last_name,
+                'email': owner.email
+            }
         return {
             'id': place.id,
             'title': place.title,
@@ -129,6 +138,7 @@ class PlaceResource(Resource):
             'latitude': place.latitude,
             'longitude': place.longitude,
             'owner_id': place.owner_id,
+            'owner': owner_data,
             'amenities': [
                 {'id': amenity.id, 'name': amenity.name}
                 for amenity in place.amenities
