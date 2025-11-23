@@ -392,21 +392,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayReviews(reviews);
             });
 
-            // Show/hide review form and login button based on authentication
+            // 
             const reviewForm = document.getElementById('review-form');
             const addReviewBtnContainer = document.getElementById('add-review-button-container');
             if (checkAuthentication()) {
                 if (reviewForm) reviewForm.style.display = 'block';
                 if (addReviewBtnContainer) addReviewBtnContainer.style.display = 'none';
-            } else {
-                if (reviewForm) reviewForm.style.display = 'none';
-                if (addReviewBtnContainer) addReviewBtnContainer.style.display = 'block';
-                const addReviewBtn = document.getElementById('add-review-btn');
-                if (addReviewBtn) {
-                    addReviewBtn.onclick = function() {
-                        window.location.href = '/login.html';
-                    };
+
+                let addReviewLabel = document.getElementById('add-review-label');
+                if (!addReviewLabel) {
+                    addReviewLabel = document.createElement('h3');
+                    addReviewLabel.id = 'add-review-label';
+                    addReviewLabel.textContent = 'Add Review';
+                    const addReviewSection = document.getElementById('add-review');
+                    if (addReviewSection) {
+                        addReviewSection.insertBefore(addReviewLabel, reviewForm);
+                    }
                 }
+            } else {
+                if (reviewForm) reviewForm.remove();
+                if (addReviewBtnContainer) addReviewBtnContainer.remove();
+                let addReviewLabel = document.getElementById('add-review-label');
+                if (addReviewLabel) addReviewLabel.remove();
             }
 
             // Review form submission
