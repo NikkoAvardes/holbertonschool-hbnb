@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (errorElement) { errorElement.style.display = 'none'; errorElement.textContent = ''; }
 			const submitButton = loginForm.querySelector('button[type="submit"]');
 			submitButton.disabled = true;
-			submitButton.textContent = 'Connexion en cours...';
+			submitButton.textContent = 'Connecting...';
 
 			const result = await loginUser(email, password);
 

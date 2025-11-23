@@ -49,6 +49,17 @@ Pour arrêter le serveur Flask, utilise `CTRL + C` dans le terminal.
 
 ---
 
+## 👤 Test d'authentification
+
+Pour tester la connexion sur le site, utilisez l'utilisateur suivant :
+
+- **Email** : `olga.ivanova@example.com`
+- **Mot de passe** : `olga1234`
+
+Ces identifiants permettent d'accéder aux fonctionnalités utilisateur du frontend.
+
+---
+
 ## Realise par:
 
 - Nicolai
