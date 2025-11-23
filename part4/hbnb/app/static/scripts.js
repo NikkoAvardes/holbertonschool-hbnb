@@ -133,7 +133,7 @@ function displayPlaces(places) {
         card.innerHTML = `
             <h3>${place.title || 'Unnamed Place'}</h3>
             <p class="price">$${place.price || 0} / night</p>
-            <p>${place.description ? place.description.substring(0, 100) + '...' : 'No description available'}</p>
+			<img src="${place.image_url || '/static/images/default.png'}" alt="Place image" class="place-img">
             <button class="details-button" onclick="viewPlaceDetails('${place.id}')">View Details</button>
         `;
 
@@ -401,9 +401,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let addReviewLabel = document.getElementById('add-review-label');
                 if (!addReviewLabel) {
-                    addReviewLabel = document.createElement('h3');
+                    addReviewLabel = document.createElement('h2');
                     addReviewLabel.id = 'add-review-label';
-                    addReviewLabel.textContent = 'Add Review';
+                    addReviewLabel.textContent = 'Add a Review';
                     const addReviewSection = document.getElementById('add-review');
                     if (addReviewSection) {
                         addReviewSection.insertBefore(addReviewLabel, reviewForm);

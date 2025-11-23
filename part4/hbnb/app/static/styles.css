@@ -63,7 +63,7 @@ nav a:hover {
 
 /* MAIN */
 main {
-	padding: 3rem;
+	padding: 6rem;
 	max-width: 1200px;
 	margin: 0 auto;
 }
@@ -280,6 +280,15 @@ main {
 	text-align: center;
 }
 
+#add-review-label {
+	text-align: left;
+	color: #2c3e50;
+	margin-bottom: 1.5rem;
+	font-size: 1.8rem;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
 .form {
 	display: flex;
 	flex-direction: column;
@@ -315,20 +324,52 @@ main {
 	resize: vertical;
 }
 
-.form button {
-	background-color: #391065;
-	color: white;
-	padding: 1rem 2rem;
-	border: none;
-	border-radius: 25px;
-	font-size: 1.1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
+.form button, #review-form button, #add-review-form button {
+    background-color: #650383;
+    color: #fff;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
 }
 
-.form button:hover {
-	background-color: #391065;
+.form button:hover, #review-form button:hover, #add-review-form button:hover {
+	background-color: #9004ba;
+}
+
+/* Стили для формы отзыва */
+#review-form textarea,
+#review-form select,
+#add-review-form textarea,
+#add-review-form select {
+	background-color: #f3f3f3;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	width: 100%;
+	font-size: 1rem;
+	margin-bottom: 1.2rem;
+	padding: 0.8rem;
+	box-sizing: border-box;
+}
+
+#review-form textarea:focus,
+#review-form select:focus,
+#add-review-form textarea:focus,
+#add-review-form select:focus {
+	outline: none;
+	border-color: #650383;
+}
+
+#review-form label,
+#add-review-form label {
+	font-weight: bold;
+	margin-bottom: 0.3rem;
+	display: block;
 }
 
 /* LOGIN */
@@ -434,4 +475,13 @@ footer p {
 	.review-card {
 		margin: 10px 0;
 	}
+}
+
+.place-img {
+	width: 100%;
+	max-height: 180px;
+	object-fit: cover;
+	border-radius: 12px;
+	margin-bottom: 1rem;
+	display: block;
 }
