@@ -37,6 +37,7 @@ nav {
 
 nav a {
 	color: #fff;
+	login-button
 	text-decoration: none;
 	padding: 0.5rem 1rem;
 	border-radius: 25px;

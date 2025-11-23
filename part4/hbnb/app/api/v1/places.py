@@ -218,13 +218,19 @@ class PlaceReviewList(Resource):
             return {"error": "Place not found"}, 404
 
         reviews = facade.get_reviews_by_place(place_id)
-        return [
-            {
+        result = []
+        for review in reviews:
+            user = facade.get_user(review.user_id)
+            user_name = None
+            if user:
+                user_name = f"{user.first_name} {user.last_name}"
+            result.append({
                 'id': review.id,
                 'text': review.text,
-                'rating': review.rating
-            } for review in reviews
-        ], 200
+                'rating': review.rating,
+                'user_name': user_name
+            })
+        return result, 200
 
 
 @api.route('/<place_id>/amenities')

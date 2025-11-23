@@ -254,7 +254,7 @@ function displayReviews(reviews) {
         card.innerHTML = `
             <div class="review-header">
                 <span class="reviewer-name">${review.user_name}</span>
-                <span class="rating">★ ${review.rating || 'N/A'}/5</span>
+                <span class="rating"> ${review.rating || 'N/A'}/5</span>
             </div>
             <p class="comment">${review.comment || review.text || 'No comment provided'}</p>
         `;
