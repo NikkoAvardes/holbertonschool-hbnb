@@ -53,8 +53,8 @@ Pour arrêter le serveur Flask, utilise `CTRL + C` dans le terminal.
 
 Pour tester la connexion sur le site, utilisez l'utilisateur suivant :
 
-- **Email** : `olga.ivanova@example.com`
-- **Mot de passe** : `olga1234`
+- **Email** : `admin@hbnb.io`
+- **Mot de passe** : `admin1234`
 
 Ces identifiants permettent d'accéder aux fonctionnalités utilisateur du frontend.
 
